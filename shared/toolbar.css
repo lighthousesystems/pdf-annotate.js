@@ -81,6 +81,15 @@ body {
   left: 4px;
 }
 
+.toolbar button.circle:after {
+  width: 15px;
+  height: 15px;
+  border: 0px solid red;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+}
+
 .toolbar button.highlight:after {
   width: 17px;
   height: 17px;
@@ -119,6 +128,6 @@ body {
   margin-left: -2px;
   margin-right: -2px;
 }
-.text-color, .pen-color {
+.text-color, .pen-color, .hotspot-color {
   display: inline-block;
 }

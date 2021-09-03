@@ -3917,6 +3917,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return page;
 	}
 	
+
 	/**
 	 * Render a page that has already been created.
 	 *
@@ -3932,6 +3933,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var pdfDocument = renderOptions.pdfDocument;
 	  var scale = renderOptions.scale;
 	  var rotate = renderOptions.rotate;
+
+	  const eventBus = new pdfjsViewer.EventBus();
 	
 	  // Load the page and annotations
 	
@@ -3945,19 +3948,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var svg = page.querySelector('.annotationLayer');
 	    var canvas = page.querySelector('.canvasWrapper canvas');
 	    var canvasContext = canvas.getContext('2d', { alpha: false });
-	    var viewport = pdfPage.getViewport(scale, rotate);
+	    var viewport = pdfPage.getViewport({scale, rotate});
 	    var transform = scalePage(pageNumber, viewport, canvasContext);
 	
 	    // Render the page
-	    return Promise.all([pdfPage.render({ canvasContext: canvasContext, viewport: viewport, transform: transform }), _PDFJSAnnotate2.default.render(svg, viewport, annotations)]).then(function () {
+	    return Promise.all([pdfPage.render({ canvasContext: canvasContext, viewport: viewport, transform: transform, renderInteractiveForms: true }), _PDFJSAnnotate2.default.render(svg, viewport, annotations)]).then(function () {
 	      // Text content is needed for a11y, but is also necessary for creating
 	      // highlight and strikeout annotations which require selecting text.
 	      return pdfPage.getTextContent({ normalizeWhitespace: true }).then(function (textContent) {
 	        return new Promise(function (resolve, reject) {
 	          // Render text layer for a11y of text content
 	          var textLayer = page.querySelector('.textLayer');
-	          var textLayerFactory = new PDFJS.DefaultTextLayerFactory();
-	          var textLayerBuilder = textLayerFactory.createTextLayerBuilder(textLayer, pageNumber - 1, viewport);
+	          var textLayerFactory = new pdfjsViewer.DefaultTextLayerFactory();
+	          var textLayerBuilder = textLayerFactory.createTextLayerBuilder(textLayer, pageNumber - 1, viewport, false, eventBus);
 	          textLayerBuilder.setTextContent(textContent);
 	          textLayerBuilder.render();
 	

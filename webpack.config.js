@@ -11,21 +11,23 @@ if (process.env.MINIFY) {
 
 module.exports = {
   devtool: 'source-map',
-  plugins: plugins,
+  optimization: optimization,
   entry: './index.js',
+  mode: 'production',
   output: {
     filename: 'dist/' + fileName + '.js',
+    path: path.join(__dirname, 'dist'),
     library: 'PDFAnnotate',
     libraryTarget: 'umd'
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
-        query: {
-          presets: ['es2015'],
+        options: {
+          presets: ['@babel/preset-env'],
           plugins: ['add-module-exports']
         }
       }

@@ -1,46 +1,69 @@
-import twitter from 'twitter-text';
 import PDFJSAnnotate from '../';
 import initColorPicker from './shared/initColorPicker';
 
+function htmlEscape(text) {
+  return text
+    .replace('&', '&amp;')
+    .replace('>', '&gt;')
+    .replace('<', '&lt;')
+    .replace('"', '&quot;')
+    .replace("'", '&#39;');
+}
+
 const { UI } = PDFJSAnnotate;
-const documentId = 'example.pdf';
+const documentId = 'lhpdf.pdf';
 let PAGE_HEIGHT;
 let RENDER_OPTIONS = {
-  documentId,
+  documentId: documentId,
   pdfDocument: null,
   scale: parseFloat(localStorage.getItem(`${documentId}/scale`), 10) || 1.33,
   rotate: parseInt(localStorage.getItem(`${documentId}/rotate`), 10) || 0
 };
 
 PDFJSAnnotate.setStoreAdapter(new PDFJSAnnotate.LocalStoreAdapter());
-PDFJS.workerSrc = './shared/pdf.worker.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc = './shared/pdf.worker.js';
 
 // Render stuff
 let NUM_PAGES = 0;
-document.getElementById('content-wrapper').addEventListener('scroll', function (e) {
+let renderedPages = [];
+let okToRender = false;
+document.getElementById('content-wrapper').addEventListener('scroll', (e) => {
   let visiblePageNum = Math.round(e.target.scrollTop / PAGE_HEIGHT) + 1;
   let visiblePage = document.querySelector(`.page[data-page-number="${visiblePageNum}"][data-loaded="false"]`);
-  if (visiblePage) {
-    setTimeout(function () {
+
+  if (renderedPages.indexOf(visiblePageNum) === -1) {
+    okToRender = true;
+    renderedPages.push(visiblePageNum);
+  }
+  else {
+    okToRender = false;
+  }
+
+  if (visiblePage && okToRender) {
+    setTimeout(() => {
       UI.renderPage(visiblePageNum, RENDER_OPTIONS);
     });
   }
 });
 
 function render() {
-  PDFJS.getDocument(RENDER_OPTIONS.documentId).then((pdf) => {
+  const loadingTask = pdfjsLib.getDocument({
+    url: RENDER_OPTIONS.documentId,
+  });
+
+  loadingTask.promise.then((pdf) => {
     RENDER_OPTIONS.pdfDocument = pdf;
 
     let viewer = document.getElementById('viewer');
     viewer.innerHTML = '';
-    NUM_PAGES = pdf.pdfInfo.numPages;
-    for (let i=0; i<NUM_PAGES; i++) {
-      let page = UI.createPage(i+1);
+    NUM_PAGES = pdf.numPages;
+    for (let i = 0; i < NUM_PAGES; i++) {
+      let page = UI.createPage(i + 1);
       viewer.appendChild(page);
     }
 
     UI.renderPage(1, RENDER_OPTIONS).then(([pdfPage, annotations]) => {
-      let viewport = pdfPage.getViewport(RENDER_OPTIONS.scale, RENDER_OPTIONS.rotate);
+      let viewport = pdfPage.getViewport({ scale: RENDER_OPTIONS.scale, rotate: RENDER_OPTIONS.rotate });
       PAGE_HEIGHT = viewport.height;
     });
   });
@@ -48,14 +71,14 @@ function render() {
 render();
 
 // Text stuff
-(function () {
+(function() {
   let textSize;
   let textColor;
 
   function initText() {
     let size = document.querySelector('.toolbar .text-size');
     [8, 9, 10, 11, 12, 14, 18, 24, 30, 36, 48, 60, 72, 96].forEach((s) => {
-      size.appendChild(new Option (s, s));
+      size.appendChild(new Option(s, s));
     });
 
     setText(
@@ -63,7 +86,7 @@ render();
       localStorage.getItem(`${RENDER_OPTIONS.documentId}/text/color`) || '#000000'
     );
 
-    initColorPicker(document.querySelector('.text-color'), textColor, function (value) {
+    initColorPicker(document.querySelector('.text-color'), textColor, function(value) {
       setText(textSize, value);
     });
   }
@@ -94,7 +117,6 @@ render();
         selected.classList.add('color-selected');
         selected.setAttribute('aria-selected', true);
       }
-
     }
 
     if (modified) {
@@ -112,14 +134,14 @@ render();
 })();
 
 // Pen stuff
-(function () {
+(function() {
   let penSize;
   let penColor;
 
   function initPen() {
     let size = document.querySelector('.toolbar .pen-size');
-    for (let i=0; i<20; i++) {
-      size.appendChild(new Option(i+1, i+1));
+    for (let i = 0; i < 20; i++) {
+      size.appendChild(new Option(i + 1, i + 1));
     }
 
     setPen(
@@ -127,7 +149,7 @@ render();
       localStorage.getItem(`${RENDER_OPTIONS.documentId}/pen/color`) || '#000000'
     );
 
-    initColorPicker(document.querySelector('.pen-color'), penColor, function (value) {
+    initColorPicker(document.querySelector('.pen-color'), penColor, function(value) {
       setPen(penSize, value);
     });
   }
@@ -175,7 +197,7 @@ render();
 })();
 
 // Toolbar buttons
-(function () {
+(function() {
   let tooltype = localStorage.getItem(`${RENDER_OPTIONS.documentId}/tooltype`) || 'cursor';
   if (tooltype) {
     setActiveToolbarItem(tooltype, document.querySelector(`.toolbar button[data-tooltype=${tooltype}]`));
@@ -190,8 +212,14 @@ render();
         case 'cursor':
           UI.disableEdit();
           break;
+        case 'eraser':
+          UI.disableEraser();
+          break;
         case 'draw':
           UI.disablePen();
+          break;
+        case 'arrow':
+          UI.disableArrow();
           break;
         case 'text':
           UI.disableText();
@@ -203,6 +231,11 @@ render();
         case 'highlight':
         case 'strikeout':
           UI.disableRect();
+          break;
+        case 'circle':
+        case 'emptycircle':
+        case 'fillcircle':
+          UI.disableCircle();
           break;
       }
     }
@@ -219,8 +252,14 @@ render();
       case 'cursor':
         UI.enableEdit();
         break;
+      case 'eraser':
+        UI.enableEraser();
+        break;
       case 'draw':
         UI.enablePen();
+        break;
+      case 'arrow':
+        UI.enableArrow();
         break;
       case 'text':
         UI.enableText();
@@ -232,6 +271,11 @@ render();
       case 'highlight':
       case 'strikeout':
         UI.enableRect(type);
+        break;
+      case 'circle':
+      case 'emptycircle':
+      case 'fillcircle':
+        UI.enableCircle(type);
         break;
     }
   }
@@ -246,7 +290,7 @@ render();
 })();
 
 // Scale/rotate
-(function () {
+(function() {
   function setScaleRotate(scale, rotate) {
     scale = parseFloat(scale, 10);
     rotate = parseInt(rotate, 10);
@@ -281,11 +325,11 @@ render();
 })();
 
 // Clear toolbar button
-(function () {
+(function() {
   function handleClearClick(e) {
     if (confirm('Are you sure you want to clear annotations?')) {
-      for (let i=0; i<NUM_PAGES; i++) {
-        document.querySelector(`div#pageContainer${i+1} svg.annotationLayer`).innerHTML = '';
+      for (let i = 0; i < NUM_PAGES; i++) {
+        document.querySelector(`div#pageContainer${i + 1} svg.annotationLayer`).innerHTML = '';
       }
 
       localStorage.removeItem(`${RENDER_OPTIONS.documentId}/annotations`);
@@ -295,7 +339,7 @@ render();
 })();
 
 // Comment stuff
-(function (window, document) {
+(function(window, document) {
   let commentList = document.querySelector('#comment-wrapper .comment-list-container');
   let commentForm = document.querySelector('#comment-wrapper .comment-list-form');
   let commentText = commentForm.querySelector('input[type="text"]');
@@ -308,7 +352,7 @@ render();
   function insertComment(comment) {
     let child = document.createElement('div');
     child.className = 'comment-list-item';
-    child.innerHTML = twitter.autoLink(twitter.htmlEscape(comment.content));
+    child.innerHTML = htmlEscape(comment.content);
 
     commentList.appendChild(child);
   }
@@ -323,7 +367,7 @@ render();
         commentForm.style.display = '';
         commentText.focus();
 
-        commentForm.onsubmit = function () {
+        commentForm.onsubmit = function() {
           PDFJSAnnotate.getStoreAdapter().addComment(documentId, annotationId, commentText.value.trim())
             .then(insertComment)
             .then(() => {
@@ -351,4 +395,5 @@ render();
 
   UI.addEventListener('annotation:click', handleAnnotationClick);
   UI.addEventListener('annotation:blur', handleAnnotationBlur);
+
 })(window, document);
