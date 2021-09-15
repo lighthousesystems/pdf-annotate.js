@@ -1,5 +1,4 @@
-# pdf-annotate.js (no longer maintained)
-
+# pdf-annotate.js 
 [![build status](https://img.shields.io/travis/instructure/pdf-annotate.js.svg?style=flat-square)](https://travis-ci.org/instructure/pdf-annotate.js)
 [![code coverage](https://img.shields.io/coveralls/instructure/pdf-annotate.js.svg?style=flat-square)](https://coveralls.io/r/instructure/pdf-annotate.js)
 
@@ -38,11 +37,11 @@ PDFJS.getDocument(RENDER_OPTIONS.documentId).then((pdf) => {
 });
 ```
 
-See more [examples](https://github.com/instructure/pdf-annotate.js/blob/master/web/index.js).
+See more [examples](https://github.com/lighthousesystems/pdf-annotate.js/blob/master/web/index.js).
 
 ## Documentation
 
-[View the docs](https://github.com/instructure/pdf-annotate.js/tree/master/docs).
+[View the docs](https://github.com/lighthousesystems/pdf-annotate.js/tree/master/docs).
 
 ## Developing
 
