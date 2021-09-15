@@ -3952,7 +3952,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var transform = scalePage(pageNumber, viewport, canvasContext);
 	
 	    // Render the page
-	    return Promise.all([pdfPage.render({ canvasContext: canvasContext, viewport: viewport, transform: transform, renderInteractiveForms: true }), _PDFJSAnnotate2.default.render(svg, viewport, annotations)]).then(function () {
+	    return Promise.all([pdfPage.render({ canvasContext: canvasContext, viewport: viewport, transform: transform, renderInteractiveForms: false }), _PDFJSAnnotate2.default.render(svg, viewport, annotations)]).then(function () {
 	      // Text content is needed for a11y, but is also necessary for creating
 	      // highlight and strikeout annotations which require selecting text.
 	      return pdfPage.getTextContent({ normalizeWhitespace: true }).then(function (textContent) {
@@ -3963,6 +3963,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var textLayerBuilder = textLayerFactory.createTextLayerBuilder(textLayer, pageNumber - 1, viewport, false, eventBus);
 	          textLayerBuilder.setTextContent(textContent);
 	          textLayerBuilder.render();
+
+			  var annotationLayer = page.querySelector('.annotationLayer');
+			  var annotationLayerBuilder = new pdfjsViewer.DefaultAnnotationLayerFactory();
+			  var buh = annotationLayerBuilder.createAnnotationLayerBuilder(svg, pdfPage);
+			  buh.render(viewport);
 	
 	          // Enable a11y for annotations
 	          // Timeout is needed to wait for `textLayerBuilder.render`

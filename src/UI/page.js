@@ -63,7 +63,7 @@ export function renderPage(pageNumber, renderOptions) {
     let canvasContext = canvas.getContext('2d', {alpha: false});
     let viewport = pdfPage.getViewport(scale, rotate);
     let transform = scalePage(pageNumber, viewport, canvasContext);
-
+    
     // Render the page
     return Promise.all([
       pdfPage.render({ canvasContext, viewport, transform }),

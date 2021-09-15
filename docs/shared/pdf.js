@@ -2151,7 +2151,7 @@ class PDFPageProxy {
     canvasContext,
     viewport,
     intent = "display",
-    renderInteractiveForms = true,
+    renderInteractiveForms = false,
     transform = null,
     imageLayer = null,
     canvasFactory = null,
