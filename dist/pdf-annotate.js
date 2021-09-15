@@ -2829,7 +2829,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  var annotationId = overlay.getAttribute('data-target-id');
 	  var nodes = document.querySelectorAll('[data-pdf-annotate-id="' + annotationId + '"]');
-	  var svg = overlay.parentNode.querySelector('svg.annotationLayer');
+	  var svg = overlay.parentNode.querySelector('svg.redLineLayer');
 	
 	  var _getMetadata = (0, _utils.getMetadata)(svg);
 	
@@ -2946,7 +2946,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var annotationId = overlay.getAttribute('data-target-id');
 	  var target = document.querySelectorAll('[data-pdf-annotate-id="' + annotationId + '"]');
 	  var type = target[0].getAttribute('data-pdf-annotate-type');
-	  var svg = overlay.parentNode.querySelector('svg.annotationLayer');
+	  var svg = overlay.parentNode.querySelector('svg.redLineLayer');
 	
 	  var _getMetadata2 = (0, _utils.getMetadata)(svg);
 	
@@ -3523,7 +3523,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {Event} e The DOM event to handle
 	 */
 	function handleDocumentMousemove(e) {
-	  var svg = overlay.parentNode.querySelector('svg.annotationLayer');
+	  var svg = overlay.parentNode.querySelector('svg.redLineLayer');
 	  var rect = svg.getBoundingClientRect();
 	
 	  if (originX + (e.clientX - originX) < rect.right) {
@@ -3553,7 +3553,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      };
 	    }));
 	  } else if (_type === 'area' && overlay) {
-	    var _svg = overlay.parentNode.querySelector('svg.annotationLayer');
+	    var _svg = overlay.parentNode.querySelector('svg.redLineLayer');
 	    var rect = _svg.getBoundingClientRect();
 	    saveRect(_type, [{
 	      top: parseInt(overlay.style.top, 10) + rect.top,
@@ -3893,7 +3893,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	// Template for creating a new page
-	var PAGE_TEMPLATE = '\n  <div style="visibility: hidden;" class="page" data-loaded="false">\n    <div class="canvasWrapper">\n      <canvas></canvas>\n    </div>\n    <svg class="annotationLayer"></svg>\n    <div class="textLayer"></div>\n  </div>\n';
+	var PAGE_TEMPLATE = '\n  <div style="visibility: hidden;" class="page" data-loaded="false">\n    <div class="canvasWrapper">\n      <canvas></canvas>\n    </div>\n    <svg class="redLineLayer"></svg>\n    <div class="textLayer"></div>\n <div class="annotationLayer"></div>\n </div>\n';
 	
 	/**
 	 * Create a new page to be appended to the DOM.
@@ -3945,7 +3945,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var annotations = _ref2[1];
 	
 	    var page = document.getElementById('pageContainer' + pageNumber);
-	    var svg = page.querySelector('.annotationLayer');
+	    var svg = page.querySelector('.redLineLayer');
 	    var canvas = page.querySelector('.canvasWrapper canvas');
 	    var canvasContext = canvas.getContext('2d', { alpha: false });
 	    var viewport = pdfPage.getViewport({scale, rotate});
@@ -3966,7 +3966,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 			  var annotationLayer = page.querySelector('.annotationLayer');
 			  var annotationLayerBuilder = new pdfjsViewer.DefaultAnnotationLayerFactory();
-			  var buh = annotationLayerBuilder.createAnnotationLayerBuilder(svg, pdfPage);
+			  var buh = annotationLayerBuilder.createAnnotationLayerBuilder(annotationLayer, pdfPage);
 			  buh.render(viewport);
 	
 	          // Enable a11y for annotations
@@ -4001,7 +4001,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function scalePage(pageNumber, viewport, context) {
 	  var page = document.getElementById('pageContainer' + pageNumber);
 	  var canvas = page.querySelector('.canvasWrapper canvas');
-	  var svg = page.querySelector('.annotationLayer');
+	  var svg = page.querySelector('.redLineLayer');
 	  var wrapper = page.querySelector('.canvasWrapper');
 	  var textLayer = page.querySelector('.textLayer');
 	  var outputScale = getOutputScale(context);
