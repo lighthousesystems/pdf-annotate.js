@@ -7,7 +7,7 @@ const PAGE_TEMPLATE = `
     <div class="canvasWrapper">
       <canvas></canvas>
     </div>
-    <svg class="redLineLayer"></svg>
+    <svg class="drawingLayer"></svg>
     <div class="textLayer"></div>
   </div>
 `;
@@ -112,7 +112,7 @@ export function renderPage(pageNumber, renderOptions) {
 function scalePage(pageNumber, viewport, context) {
   let page = document.getElementById(`pageContainer${pageNumber}`);
   let canvas = page.querySelector('.canvasWrapper canvas');
-  let svg = page.querySelector('.redLineLayer');
+  let svg = page.querySelector('.drawingLayer');
   let wrapper = page.querySelector('.canvasWrapper');
   let textLayer = page.querySelector('.textLayer');
   let outputScale = getOutputScale(context);
