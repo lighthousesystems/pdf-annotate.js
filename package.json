@@ -47,7 +47,7 @@
     "lolex": "^1.4.0",
     "mocha": "^2.4.5",
     "object-assign": "^4.0.1",
-    "pdfjs-dist": "2.9.359",
+    "pdfjs-dist": "2.10.377",
     "simulant": "^0.2.0",
     "sinon": "^9.0.2",
     "sinon-chai": "^2.8.0",
@@ -57,7 +57,7 @@
     "webpack-dev-server": "1.14.1"
   },
   "peerDependencies": {
-    "pdfjs-dist": "^2.9.359"
+    "pdfjs-dist": "^2.10.377"
   },
   "dependencies": {
     "create-stylesheet": "^0.3.0",
