@@ -27,9 +27,12 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = './shared/pdf.worker.js';
 let NUM_PAGES = 0;
 let renderedPages = [];
 let okToRender = false;
+let currentPage = 1;
+
 document.getElementById('content-wrapper').addEventListener('scroll', (e) => {
   let visiblePageNum = Math.round(e.target.scrollTop / PAGE_HEIGHT) + 1;
   let visiblePage = document.querySelector(`.page[data-page-number="${visiblePageNum}"][data-loaded="false"]`);
+  currentPage = visiblePageNum;
 
   if (renderedPages.indexOf(visiblePageNum) === -1) {
     okToRender = true;
@@ -41,7 +44,7 @@ document.getElementById('content-wrapper').addEventListener('scroll', (e) => {
 
   if (visiblePage && okToRender) {
     setTimeout(() => {
-      UI.renderPage(visiblePageNum, RENDER_OPTIONS);
+      UI.renderPage(visiblePageNum, RENDER_OPTIONS)
     });
   }
 });
@@ -62,7 +65,7 @@ function render() {
       viewer.appendChild(page);
     }
 
-    UI.renderPage(1, RENDER_OPTIONS).then(([pdfPage, annotations]) => {
+    UI.renderPage(currentPage, RENDER_OPTIONS).then(([pdfPage, annotations]) => {
       let viewport = pdfPage.getViewport({ scale: RENDER_OPTIONS.scale, rotate: RENDER_OPTIONS.rotate });
       PAGE_HEIGHT = viewport.height;
     });
@@ -301,6 +304,8 @@ render();
 
       localStorage.setItem(`${RENDER_OPTIONS.documentId}/scale`, RENDER_OPTIONS.scale);
       localStorage.setItem(`${RENDER_OPTIONS.documentId}/rotate`, RENDER_OPTIONS.rotate % 360);
+
+      renderedPages = []
 
       render();
     }
