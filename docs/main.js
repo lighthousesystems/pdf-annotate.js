@@ -66,7 +66,7 @@ function render() {
     }
 
     UI.renderPage(currentPage, RENDER_OPTIONS).then(([pdfPage, annotations]) => {
-      let viewport = pdfPage.getViewport({ scale: RENDER_OPTIONS.scale, rotate: RENDER_OPTIONS.rotate });
+      let viewport = pdfPage.getViewport({ scale: RENDER_OPTIONS.scale, rotation: RENDER_OPTIONS.rotate });
       PAGE_HEIGHT = viewport.height;
     });
   });

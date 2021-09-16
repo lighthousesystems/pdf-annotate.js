@@ -3948,7 +3948,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var svg = page.querySelector('.drawingLayer');
 	    var canvas = page.querySelector('.canvasWrapper canvas');
 	    var canvasContext = canvas.getContext('2d', { alpha: false });
-	    var viewport = pdfPage.getViewport({scale, rotate});
+	    var viewport = pdfPage.getViewport({scale, rotation: rotate});
 	    var transform = scalePage(pageNumber, viewport, canvasContext);
 	
 	    // Render the page
