@@ -61,7 +61,7 @@ export function renderPage(pageNumber, renderOptions) {
     let svg = page.querySelector('.annotationLayer');
     let canvas = page.querySelector('.canvasWrapper canvas');
     let canvasContext = canvas.getContext('2d', {alpha: false});
-    let viewport = pdfPage.getViewport(scale, rotate);
+    let viewport = pdfPage.getViewport({scale, roation: rotate});
     let transform = scalePage(pageNumber, viewport, canvasContext);
     
     // Render the page
