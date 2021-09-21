@@ -718,7 +718,7 @@ function renderPage(pageNumber, renderOptions) {
         annotations = _ref2[1];
 
     var page = document.getElementById("pageContainer".concat(pageNumber));
-    var svg = page.querySelector('.annotationLayer');
+    var svg = page.querySelector('.drawingLayer');
     var canvas = page.querySelector('.canvasWrapper canvas');
     var canvasContext = canvas.getContext('2d', {
       alpha: false
