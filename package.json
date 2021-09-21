@@ -6,7 +6,7 @@
   "scripts": {
     "test": "karma start --single-run",
     "start": "webpack-dev-server --config .\\webpack.web.js --static docs\\",
-    "build": "MINIFY=1 webpack",
+    "build": "webpack --config .\\webpack.dev.js && webpack --config .\\webpack.config.js",
     "coveralls": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "files": [
@@ -20,7 +20,7 @@
     "pdf",
     "annotation"
   ],
-  "author": "Matt Zabriskie",
+  "author": "Lighthouse Systems Ltd",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/lighthousesystems/pdf-annotate.js/issues"

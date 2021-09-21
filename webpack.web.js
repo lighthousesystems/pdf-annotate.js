@@ -1,4 +1,3 @@
-var webpack = require('webpack');
 var path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const relativePath = (extraPath) => path.resolve(__dirname, extraPath);
