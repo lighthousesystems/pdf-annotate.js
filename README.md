@@ -1,6 +1,4 @@
 # pdf-annotate.js 
-[![build status](https://img.shields.io/travis/instructure/pdf-annotate.js.svg?style=flat-square)](https://travis-ci.org/instructure/pdf-annotate.js)
-[![code coverage](https://img.shields.io/coveralls/instructure/pdf-annotate.js.svg?style=flat-square)](https://coveralls.io/r/instructure/pdf-annotate.js)
 
 Annotation layer for [pdf.js](https://github.com/mozilla/pdf.js)
 
@@ -47,7 +45,7 @@ See more [examples](https://github.com/lighthousesystems/pdf-annotate.js/blob/ma
 
 ```bash
 # clone the repo
-$ git clone https://github.com/instructure/pdf-annotate.js.git
+$ git clone https://github.com/lighthousesystems/pdf-annotate.js.git
 $ cd pdf-annotate.js
 
 # intall dependencies
