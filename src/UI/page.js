@@ -58,7 +58,7 @@ export function renderPage(pageNumber, renderOptions) {
     PDFJSAnnotate.getAnnotations(documentId, pageNumber)
   ]).then(([pdfPage, annotations]) => {
     let page = document.getElementById(`pageContainer${pageNumber}`);
-    let svg = page.querySelector('.annotationLayer');
+    let svg = page.querySelector('.drawingLayer');
     let canvas = page.querySelector('.canvasWrapper canvas');
     let canvasContext = canvas.getContext('2d', {alpha: false});
     let viewport = pdfPage.getViewport({scale, roation: rotate});
