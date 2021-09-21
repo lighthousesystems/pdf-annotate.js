@@ -11,7 +11,7 @@ function htmlEscape(text) {
 }
 
 const { UI } = PDFJSAnnotate;
-const documentId = 'lhpdf.pdf';
+const documentId = 'example.pdf';
 let PAGE_HEIGHT;
 let RENDER_OPTIONS = {
   documentId: documentId,
