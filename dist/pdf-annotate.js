@@ -710,7 +710,8 @@ function renderPage(pageNumber, renderOptions) {
   var documentId = renderOptions.documentId,
       pdfDocument = renderOptions.pdfDocument,
       scale = renderOptions.scale,
-      rotate = renderOptions.rotate; // Load the page and annotations
+      rotate = renderOptions.rotate;
+  var eventBus = new pdfjsViewer.EventBus(); // Load the page and annotations
 
   return Promise.all([pdfDocument.getPage(pageNumber), _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getAnnotations(documentId, pageNumber)]).then(function (_ref) {
     var _ref2 = _slicedToArray(_ref, 2),
@@ -725,14 +726,15 @@ function renderPage(pageNumber, renderOptions) {
     });
     var viewport = pdfPage.getViewport({
       scale: scale,
-      roation: rotate
+      rotation: rotate
     });
     var transform = scalePage(pageNumber, viewport, canvasContext); // Render the page
 
     return Promise.all([pdfPage.render({
       canvasContext: canvasContext,
       viewport: viewport,
-      transform: transform
+      transform: transform,
+      renderInteractiveForms: true
     }), _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].render(svg, viewport, annotations)]).then(function () {
       // Text content is needed for a11y, but is also necessary for creating
       // highlight and strikeout annotations which require selecting text.
@@ -743,9 +745,13 @@ function renderPage(pageNumber, renderOptions) {
           // Render text layer for a11y of text content
           var textLayer = page.querySelector(".textLayer");
           var textLayerFactory = new pdfjsViewer.DefaultTextLayerFactory();
-          var textLayerBuilder = textLayerFactory.createTextLayerBuilder(textLayer, pageNumber - 1, viewport);
+          var textLayerBuilder = textLayerFactory.createTextLayerBuilder(textLayer, pageNumber - 1, viewport, false, eventBus);
           textLayerBuilder.setTextContent(textContent);
-          textLayerBuilder.render(); // Enable a11y for annotations
+          textLayerBuilder.render();
+          var annotationLayer = page.querySelector('.annotationLayer');
+          var annotationLayerFactory = new pdfjsViewer.DefaultAnnotationLayerFactory();
+          var annotationLayerBuilder = annotationLayerFactory.createAnnotationLayerBuilder(annotationLayer, pdfPage);
+          annotationLayerBuilder.render(viewport); // Enable a11y for annotations
           // Timeout is needed to wait for `textLayerBuilder.render`
 
           setTimeout(function () {
