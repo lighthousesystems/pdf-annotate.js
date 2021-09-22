@@ -1,7 +1,4 @@
-# pdf-annotate.js (no longer maintained)
-
-[![build status](https://img.shields.io/travis/instructure/pdf-annotate.js.svg?style=flat-square)](https://travis-ci.org/instructure/pdf-annotate.js)
-[![code coverage](https://img.shields.io/coveralls/instructure/pdf-annotate.js.svg?style=flat-square)](https://coveralls.io/r/instructure/pdf-annotate.js)
+# pdf-annotate.js 
 
 Annotation layer for [pdf.js](https://github.com/mozilla/pdf.js)
 
@@ -15,8 +12,7 @@ Annotation layer for [pdf.js](https://github.com/mozilla/pdf.js)
 ## Example
 
 ```js
-import __pdfjs from 'pdfjs-dist/build/pdf';
-import PDFJSAnnotate from 'pdfjs-annotate';
+import PDFJSAnnotate from '@lighthousesystems/pdfjs-annotate';
 import MyStoreAdapter from './myStoreAdapter';
 
 const { UI } = PDFJSAnnotate;
@@ -38,17 +34,17 @@ PDFJS.getDocument(RENDER_OPTIONS.documentId).then((pdf) => {
 });
 ```
 
-See more [examples](https://github.com/instructure/pdf-annotate.js/blob/master/web/index.js).
+See more [examples](https://github.com/lighthousesystems/pdf-annotate.js/blob/master/web/index.js).
 
 ## Documentation
 
-[View the docs](https://github.com/instructure/pdf-annotate.js/tree/master/docs).
+[View the docs](https://github.com/lighthousesystems/pdf-annotate.js/tree/master/docs).
 
 ## Developing
 
 ```bash
 # clone the repo
-$ git clone https://github.com/instructure/pdf-annotate.js.git
+$ git clone https://github.com/lighthousesystems/pdf-annotate.js.git
 $ cd pdf-annotate.js
 
 # intall dependencies

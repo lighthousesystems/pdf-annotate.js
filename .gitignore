@@ -1,3 +1,5 @@
 node_modules/
 coverage/
 sandbox/shared
+docs/shared/pdf_viewer.*
+docs/shared/pdf.*.js

@@ -7,7 +7,7 @@ const PAGE_TEMPLATE = `
     <div class="canvasWrapper">
       <canvas></canvas>
     </div>
-    <svg class="annotationLayer"></svg>
+    <svg class="drawingLayer"></svg>
     <div class="textLayer"></div>
   </div>
 `;
@@ -52,21 +52,23 @@ export function renderPage(pageNumber, renderOptions) {
     rotate
   } = renderOptions;
 
+  let eventBus = new pdfjsViewer.EventBus();
+
   // Load the page and annotations
   return Promise.all([
     pdfDocument.getPage(pageNumber),
     PDFJSAnnotate.getAnnotations(documentId, pageNumber)
   ]).then(([pdfPage, annotations]) => {
     let page = document.getElementById(`pageContainer${pageNumber}`);
-    let svg = page.querySelector('.annotationLayer');
+    let svg = page.querySelector('.drawingLayer');
     let canvas = page.querySelector('.canvasWrapper canvas');
     let canvasContext = canvas.getContext('2d', {alpha: false});
-    let viewport = pdfPage.getViewport(scale, rotate);
+    let viewport = pdfPage.getViewport({scale, rotation: rotate});
     let transform = scalePage(pageNumber, viewport, canvasContext);
-
+    
     // Render the page
     return Promise.all([
-      pdfPage.render({ canvasContext, viewport, transform }),
+      pdfPage.render({ canvasContext, viewport, transform, renderInteractiveForms: true }),
       PDFJSAnnotate.render(svg, viewport, annotations)
     ]).then(() => {
       // Text content is needed for a11y, but is also necessary for creating
@@ -75,10 +77,15 @@ export function renderPage(pageNumber, renderOptions) {
         return new Promise((resolve, reject) => {
           // Render text layer for a11y of text content
           let textLayer = page.querySelector(`.textLayer`);
-          let textLayerFactory = new PDFJS.DefaultTextLayerFactory();
-          let textLayerBuilder = textLayerFactory.createTextLayerBuilder(textLayer, pageNumber -1, viewport);
+          let textLayerFactory = new pdfjsViewer.DefaultTextLayerFactory();
+          let textLayerBuilder = textLayerFactory.createTextLayerBuilder(textLayer, pageNumber - 1, viewport, false, eventBus);
           textLayerBuilder.setTextContent(textContent);
           textLayerBuilder.render();
+
+          let annotationLayer = page.querySelector('.annotationLayer');
+          let annotationLayerFactory = new pdfjsViewer.DefaultAnnotationLayerFactory();
+          let annotationLayerBuilder = annotationLayerFactory.createAnnotationLayerBuilder(annotationLayer, pdfPage);
+          annotationLayerBuilder.render(viewport);
 
           // Enable a11y for annotations
           // Timeout is needed to wait for `textLayerBuilder.render`
@@ -112,7 +119,7 @@ export function renderPage(pageNumber, renderOptions) {
 function scalePage(pageNumber, viewport, context) {
   let page = document.getElementById(`pageContainer${pageNumber}`);
   let canvas = page.querySelector('.canvasWrapper canvas');
-  let svg = page.querySelector('.annotationLayer');
+  let svg = page.querySelector('.drawingLayer');
   let wrapper = page.querySelector('.canvasWrapper');
   let textLayer = page.querySelector('.textLayer');
   let outputScale = getOutputScale(context);
