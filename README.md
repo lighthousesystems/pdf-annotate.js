@@ -12,8 +12,7 @@ Annotation layer for [pdf.js](https://github.com/mozilla/pdf.js)
 ## Example
 
 ```js
-import __pdfjs from 'pdfjs-dist/build/pdf';
-import PDFJSAnnotate from 'pdfjs-annotate';
+import PDFJSAnnotate from '@lighthousesystems/pdfjs-annotate';
 import MyStoreAdapter from './myStoreAdapter';
 
 const { UI } = PDFJSAnnotate;
