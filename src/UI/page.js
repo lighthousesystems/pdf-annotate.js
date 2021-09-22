@@ -9,6 +9,7 @@ const PAGE_TEMPLATE = `
     </div>
     <svg class="drawingLayer"></svg>
     <div class="textLayer"></div>
+    <div class="annotationLayer"></div>
   </div>
 `;
 

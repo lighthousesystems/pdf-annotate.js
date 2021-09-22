@@ -676,7 +676,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
  // Template for creating a new page
 
-var PAGE_TEMPLATE = "\n  <div style=\"visibility: hidden;\" class=\"page\" data-loaded=\"false\">\n    <div class=\"canvasWrapper\">\n      <canvas></canvas>\n    </div>\n    <svg class=\"drawingLayer\"></svg>\n    <div class=\"textLayer\"></div>\n  </div>\n";
+var PAGE_TEMPLATE = "\n  <div style=\"visibility: hidden;\" class=\"page\" data-loaded=\"false\">\n    <div class=\"canvasWrapper\">\n      <canvas></canvas>\n    </div>\n    <svg class=\"drawingLayer\"></svg>\n    <div class=\"textLayer\"></div>\n    <div class=\"annotationLayer\"></div>\n  </div>\n";
 /**
  * Create a new page to be appended to the DOM.
  *
