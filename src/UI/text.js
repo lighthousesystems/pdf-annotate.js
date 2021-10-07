@@ -35,7 +35,7 @@ function handleDocumentMouseup(e) {
   input.addEventListener('blur', handleInputBlur);
   input.addEventListener('keyup', handleInputKeyup);
 
-  document.body.appendChild(input);
+  document.getElementById("content-wrapper").removeChild(input);
   input.focus();
 }
 
@@ -102,7 +102,7 @@ function closeInput() {
   if (input) {
     input.removeEventListener('blur', handleInputBlur);
     input.removeEventListener('keyup', handleInputKeyup);
-    document.body.removeChild(input);
+    document.getElementById("content-wrapper").removeChild(input);
     input = null;
   }
 }

@@ -32,7 +32,7 @@ function handleDocumentMouseup(e) {
   input.addEventListener('blur', handleInputBlur);
   input.addEventListener('keyup', handleInputKeyup);
 
-  document.body.appendChild(input);
+  document.getElementById("content-wrapper").removeChild(input);
   input.focus();
 }
 
