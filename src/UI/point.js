@@ -1,11 +1,6 @@
-import PDFJSAnnotate from '../PDFJSAnnotate';
-import appendChild from '../render/appendChild';
-import {
-  BORDER_COLOR,
-  findSVGAtPoint,
-  getMetadata,
-  scaleDown
-} from './utils';
+import PDFJSAnnotate from "../PDFJSAnnotate";
+import appendChild from "../render/appendChild";
+import { BORDER_COLOR, findSVGAtPoint, getMetadata, scaleDown } from "./utils";
 
 let _enabled = false;
 let input;
@@ -17,22 +12,22 @@ let input;
  */
 function handleDocumentMouseup(e) {
   if (input || !findSVGAtPoint(e.clientX, e.clientY)) {
-    return
+    return;
   }
-  
-  input = document.createElement('input');
-  input.setAttribute('id', 'pdf-annotate-point-input');
-  input.setAttribute('placeholder', 'Enter comment');
+
+  input = document.createElement("input");
+  input.setAttribute("id", "pdf-annotate-point-input");
+  input.setAttribute("placeholder", "Enter comment");
   input.style.border = `3px solid ${BORDER_COLOR}`;
-  input.style.borderRadius = '3px';
-  input.style.position = 'absolute';
+  input.style.borderRadius = "3px";
+  input.style.position = "absolute";
   input.style.top = `${e.clientY}px`;
   input.style.left = `${e.clientX}px`;
 
-  input.addEventListener('blur', handleInputBlur);
-  input.addEventListener('keyup', handleInputKeyup);
+  input.addEventListener("blur", handleInputBlur);
+  input.addEventListener("keyup", handleInputKeyup);
 
-  document.getElementById("content-wrapper").removeChild(input);
+  document.getElementById("content-wrapper").appendChild(input);
   input.focus();
 }
 
@@ -71,15 +66,18 @@ function savePoint() {
 
     let rect = svg.getBoundingClientRect();
     let { documentId, pageNumber } = getMetadata(svg);
-    let annotation = Object.assign({
-        type: 'point'
-      }, scaleDown(svg, {
+    let annotation = Object.assign(
+      {
+        type: "point",
+      },
+      scaleDown(svg, {
         x: clientX - rect.left,
-        y: clientY - rect.top
+        y: clientY - rect.top,
       })
     );
 
-    PDFJSAnnotate.getStoreAdapter().addAnnotation(documentId, pageNumber, annotation)
+    PDFJSAnnotate.getStoreAdapter()
+      .addAnnotation(documentId, pageNumber, annotation)
       .then((annotation) => {
         PDFJSAnnotate.getStoreAdapter().addComment(
           documentId,
@@ -98,8 +96,8 @@ function savePoint() {
  * Close the input element
  */
 function closeInput() {
-  input.removeEventListener('blur', handleInputBlur);
-  input.removeEventListener('keyup', handleInputKeyup);
+  input.removeEventListener("blur", handleInputBlur);
+  input.removeEventListener("keyup", handleInputKeyup);
   document.body.removeChild(input);
   input = null;
 }
@@ -108,19 +106,22 @@ function closeInput() {
  * Enable point annotation behavior
  */
 export function enablePoint() {
-  if (_enabled) { return; }
+  if (_enabled) {
+    return;
+  }
 
   _enabled = true;
-  document.addEventListener('mouseup', handleDocumentMouseup);
+  document.addEventListener("mouseup", handleDocumentMouseup);
 }
 
 /**
  * Disable point annotation behavior
  */
 export function disablePoint() {
-  if (!_enabled) { return; }
+  if (!_enabled) {
+    return;
+  }
 
   _enabled = false;
-  document.removeEventListener('mouseup', handleDocumentMouseup);
+  document.removeEventListener("mouseup", handleDocumentMouseup);
 }
-
