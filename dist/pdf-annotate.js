@@ -1100,17 +1100,17 @@ function handleDocumentMouseup(e) {
     return;
   }
 
-  input = document.createElement('input');
-  input.setAttribute('id', 'pdf-annotate-point-input');
-  input.setAttribute('placeholder', 'Enter comment');
+  input = document.createElement("input");
+  input.setAttribute("id", "pdf-annotate-point-input");
+  input.setAttribute("placeholder", "Enter comment");
   input.style.border = "3px solid ".concat(_utils__WEBPACK_IMPORTED_MODULE_2__.BORDER_COLOR);
-  input.style.borderRadius = '3px';
-  input.style.position = 'absolute';
+  input.style.borderRadius = "3px";
+  input.style.position = "absolute";
   input.style.top = "".concat(e.clientY, "px");
   input.style.left = "".concat(e.clientX, "px");
-  input.addEventListener('blur', handleInputBlur);
-  input.addEventListener('keyup', handleInputKeyup);
-  document.body.appendChild(input);
+  input.addEventListener("blur", handleInputBlur);
+  input.addEventListener("keyup", handleInputKeyup);
+  document.getElementById("content-wrapper").appendChild(input);
   input.focus();
 }
 /**
@@ -1158,7 +1158,7 @@ function savePoint() {
         pageNumber = _getMetadata.pageNumber;
 
     var annotation = Object.assign({
-      type: 'point'
+      type: "point"
     }, (0,_utils__WEBPACK_IMPORTED_MODULE_2__.scaleDown)(svg, {
       x: clientX - rect.left,
       y: clientY - rect.top
@@ -1177,8 +1177,8 @@ function savePoint() {
 
 
 function closeInput() {
-  input.removeEventListener('blur', handleInputBlur);
-  input.removeEventListener('keyup', handleInputKeyup);
+  input.removeEventListener("blur", handleInputBlur);
+  input.removeEventListener("keyup", handleInputKeyup);
   document.body.removeChild(input);
   input = null;
 }
@@ -1193,7 +1193,7 @@ function enablePoint() {
   }
 
   _enabled = true;
-  document.addEventListener('mouseup', handleDocumentMouseup);
+  document.addEventListener("mouseup", handleDocumentMouseup);
 }
 /**
  * Disable point annotation behavior
@@ -1205,7 +1205,7 @@ function disablePoint() {
   }
 
   _enabled = false;
-  document.removeEventListener('mouseup', handleDocumentMouseup);
+  document.removeEventListener("mouseup", handleDocumentMouseup);
 }
 
 /***/ }),
@@ -1513,18 +1513,18 @@ function handleDocumentMouseup(e) {
     return;
   }
 
-  input = document.createElement('input');
-  input.setAttribute('id', 'pdf-annotate-text-input');
-  input.setAttribute('placeholder', 'Enter text');
+  input = document.createElement("input");
+  input.setAttribute("id", "pdf-annotate-text-input");
+  input.setAttribute("placeholder", "Enter text");
   input.style.border = "3px solid ".concat(_utils__WEBPACK_IMPORTED_MODULE_2__.BORDER_COLOR);
-  input.style.borderRadius = '3px';
-  input.style.position = 'absolute';
+  input.style.borderRadius = "3px";
+  input.style.position = "absolute";
   input.style.top = "".concat(e.clientY, "px");
   input.style.left = "".concat(e.clientX, "px");
   input.style.fontSize = "".concat(_textSize, "px");
-  input.addEventListener('blur', handleInputBlur);
-  input.addEventListener('keyup', handleInputKeyup);
-  document.body.appendChild(input);
+  input.addEventListener("blur", handleInputBlur);
+  input.addEventListener("keyup", handleInputKeyup);
+  document.getElementById("content-wrapper").appendChild(input);
   input.focus();
 }
 /**
@@ -1570,7 +1570,7 @@ function saveText() {
 
     var rect = svg.getBoundingClientRect();
     var annotation = Object.assign({
-      type: 'textbox',
+      type: "textbox",
       size: _textSize,
       color: _textColor,
       content: input.value.trim()
@@ -1594,9 +1594,9 @@ function saveText() {
 
 function closeInput() {
   if (input) {
-    input.removeEventListener('blur', handleInputBlur);
-    input.removeEventListener('keyup', handleInputKeyup);
-    document.body.removeChild(input);
+    input.removeEventListener("blur", handleInputBlur);
+    input.removeEventListener("keyup", handleInputKeyup);
+    document.getElementById("content-wrapper").removeChild(input);
     input = null;
   }
 }
@@ -1610,7 +1610,7 @@ function closeInput() {
 
 function setText() {
   var textSize = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 12;
-  var textColor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '000000';
+  var textColor = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "000000";
   _textSize = parseInt(textSize, 10);
   _textColor = textColor;
 }
@@ -1624,7 +1624,7 @@ function enableText() {
   }
 
   _enabled = true;
-  document.addEventListener('mouseup', handleDocumentMouseup);
+  document.addEventListener("mouseup", handleDocumentMouseup);
 }
 /**
  * Disable text behavior
@@ -1636,7 +1636,7 @@ function disableText() {
   }
 
   _enabled = false;
-  document.removeEventListener('mouseup', handleDocumentMouseup);
+  document.removeEventListener("mouseup", handleDocumentMouseup);
 }
 
 /***/ }),
