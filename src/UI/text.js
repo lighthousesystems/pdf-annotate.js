@@ -1,11 +1,6 @@
-import PDFJSAnnotate from '../PDFJSAnnotate';
-import appendChild from '../render/appendChild';
-import {
-  BORDER_COLOR,
-  findSVGAtPoint,
-  getMetadata,
-  scaleDown
-} from './utils';
+import PDFJSAnnotate from "../PDFJSAnnotate";
+import appendChild from "../render/appendChild";
+import { BORDER_COLOR, findSVGAtPoint, getMetadata, scaleDown } from "./utils";
 
 let _enabled = false;
 let input;
@@ -22,20 +17,20 @@ function handleDocumentMouseup(e) {
     return;
   }
 
-  input = document.createElement('input');
-  input.setAttribute('id', 'pdf-annotate-text-input');
-  input.setAttribute('placeholder', 'Enter text');
+  input = document.createElement("input");
+  input.setAttribute("id", "pdf-annotate-text-input");
+  input.setAttribute("placeholder", "Enter text");
   input.style.border = `3px solid ${BORDER_COLOR}`;
-  input.style.borderRadius = '3px';
-  input.style.position = 'absolute';
+  input.style.borderRadius = "3px";
+  input.style.position = "absolute";
   input.style.top = `${e.clientY}px`;
   input.style.left = `${e.clientX}px`;
   input.style.fontSize = `${_textSize}px`;
 
-  input.addEventListener('blur', handleInputBlur);
-  input.addEventListener('keyup', handleInputKeyup);
+  input.addEventListener("blur", handleInputBlur);
+  input.addEventListener("keyup", handleInputKeyup);
 
-  document.body.appendChild(input);
+  document.getElementById("content-wrapper").appendChild(input);
   input.focus();
 }
 
@@ -73,25 +68,28 @@ function saveText() {
 
     let { documentId, pageNumber } = getMetadata(svg);
     let rect = svg.getBoundingClientRect();
-    let annotation = Object.assign({
-        type: 'textbox',
+    let annotation = Object.assign(
+      {
+        type: "textbox",
         size: _textSize,
         color: _textColor,
-        content: input.value.trim()
-      }, scaleDown(svg, {
+        content: input.value.trim(),
+      },
+      scaleDown(svg, {
         x: clientX - rect.left,
-        y: clientY -  rect.top,
+        y: clientY - rect.top,
         width: input.offsetWidth,
-        height: input.offsetHeight
+        height: input.offsetHeight,
       })
     );
 
-    PDFJSAnnotate.getStoreAdapter().addAnnotation(documentId, pageNumber, annotation)
+    PDFJSAnnotate.getStoreAdapter()
+      .addAnnotation(documentId, pageNumber, annotation)
       .then((annotation) => {
         appendChild(svg, annotation);
       });
   }
-  
+
   closeInput();
 }
 
@@ -100,9 +98,9 @@ function saveText() {
  */
 function closeInput() {
   if (input) {
-    input.removeEventListener('blur', handleInputBlur);
-    input.removeEventListener('keyup', handleInputKeyup);
-    document.body.removeChild(input);
+    input.removeEventListener("blur", handleInputBlur);
+    input.removeEventListener("keyup", handleInputKeyup);
+    document.getElementById("content-wrapper").removeChild(input);
     input = null;
   }
 }
@@ -113,30 +111,31 @@ function closeInput() {
  * @param {Number} textSize The size of the text
  * @param {String} textColor The color of the text
  */
-export function setText(textSize = 12, textColor = '000000') {
+export function setText(textSize = 12, textColor = "000000") {
   _textSize = parseInt(textSize, 10);
   _textColor = textColor;
 }
-
 
 /**
  * Enable text behavior
  */
 export function enableText() {
-  if (_enabled) { return; }
+  if (_enabled) {
+    return;
+  }
 
   _enabled = true;
-  document.addEventListener('mouseup', handleDocumentMouseup);
+  document.addEventListener("mouseup", handleDocumentMouseup);
 }
-
 
 /**
  * Disable text behavior
  */
 export function disableText() {
-  if (!_enabled) { return; }
+  if (!_enabled) {
+    return;
+  }
 
   _enabled = false;
-  document.removeEventListener('mouseup', handleDocumentMouseup);
+  document.removeEventListener("mouseup", handleDocumentMouseup);
 }
-
