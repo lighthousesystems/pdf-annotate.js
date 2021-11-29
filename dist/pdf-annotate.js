@@ -1179,7 +1179,7 @@ function savePoint() {
 function closeInput() {
   input.removeEventListener("blur", handleInputBlur);
   input.removeEventListener("keyup", handleInputKeyup);
-  document.body.removeChild(input);
+  document.getElementById("content-wrapper").removeChild(input);
   input = null;
 }
 /**
