@@ -1105,7 +1105,7 @@ function handleDocumentMouseup(e) {
   input.setAttribute("placeholder", "Enter comment");
   input.style.border = "3px solid ".concat(_utils__WEBPACK_IMPORTED_MODULE_2__.BORDER_COLOR);
   input.style.borderRadius = "3px";
-  input.style.position = "absolute";
+  input.style.position = "fixed";
   input.style.top = "".concat(e.clientY, "px");
   input.style.left = "".concat(e.clientX, "px");
   input.addEventListener("blur", handleInputBlur);
@@ -1518,7 +1518,7 @@ function handleDocumentMouseup(e) {
   input.setAttribute("placeholder", "Enter text");
   input.style.border = "3px solid ".concat(_utils__WEBPACK_IMPORTED_MODULE_2__.BORDER_COLOR);
   input.style.borderRadius = "3px";
-  input.style.position = "absolute";
+  input.style.position = "fixed";
   input.style.top = "".concat(e.clientY, "px");
   input.style.left = "".concat(e.clientX, "px");
   input.style.fontSize = "".concat(_textSize, "px");
