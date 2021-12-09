@@ -22,7 +22,7 @@ function handleDocumentMouseup(e) {
   input.setAttribute("placeholder", "Enter text");
   input.style.border = `3px solid ${BORDER_COLOR}`;
   input.style.borderRadius = "3px";
-  input.style.position = "absolute";
+  input.style.position = "fixed";
   input.style.top = `${e.clientY}px`;
   input.style.left = `${e.clientX}px`;
   input.style.fontSize = `${_textSize}px`;

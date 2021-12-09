@@ -20,7 +20,7 @@ function handleDocumentMouseup(e) {
   input.setAttribute("placeholder", "Enter comment");
   input.style.border = `3px solid ${BORDER_COLOR}`;
   input.style.borderRadius = "3px";
-  input.style.position = "absolute";
+  input.style.position = "fixed";
   input.style.top = `${e.clientY}px`;
   input.style.left = `${e.clientX}px`;
 
