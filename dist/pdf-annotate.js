@@ -638,6 +638,7 @@ __webpack_require__.r(__webpack_exports__);
   enablePoint: _point__WEBPACK_IMPORTED_MODULE_3__.enablePoint,
   disableRect: _rect__WEBPACK_IMPORTED_MODULE_4__.disableRect,
   enableRect: _rect__WEBPACK_IMPORTED_MODULE_4__.enableRect,
+  highlightText: _rect__WEBPACK_IMPORTED_MODULE_4__.highlightText,
   disableText: _text__WEBPACK_IMPORTED_MODULE_5__.disableText,
   enableText: _text__WEBPACK_IMPORTED_MODULE_5__.enableText,
   setText: _text__WEBPACK_IMPORTED_MODULE_5__.setText,
@@ -1220,7 +1221,8 @@ function disablePoint() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "enableRect": () => (/* binding */ enableRect),
-/* harmony export */   "disableRect": () => (/* binding */ disableRect)
+/* harmony export */   "disableRect": () => (/* binding */ disableRect),
+/* harmony export */   "highlightText": () => (/* binding */ highlightText)
 /* harmony export */ });
 /* harmony import */ var _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../PDFJSAnnotate */ "./src/PDFJSAnnotate.js");
 /* harmony import */ var _render_appendChild__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../render/appendChild */ "./src/render/appendChild.js");
@@ -1276,21 +1278,21 @@ function getSelectionRects() {
 function handleDocumentMousedown(e) {
   var svg;
 
-  if (_type !== 'area' || !(svg = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(e.clientX, e.clientY))) {
+  if (_type !== "area" || !(svg = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(e.clientX, e.clientY))) {
     return;
   }
 
   var rect = svg.getBoundingClientRect();
   originY = e.clientY;
   originX = e.clientX;
-  overlay = document.createElement('div');
-  overlay.style.position = 'absolute';
+  overlay = document.createElement("div");
+  overlay.style.position = "absolute";
   overlay.style.top = "".concat(originY - rect.top, "px");
   overlay.style.left = "".concat(originX - rect.left, "px");
   overlay.style.border = "3px solid ".concat(_utils__WEBPACK_IMPORTED_MODULE_2__.BORDER_COLOR);
-  overlay.style.borderRadius = '3px';
+  overlay.style.borderRadius = "3px";
   svg.parentNode.appendChild(overlay);
-  document.addEventListener('mousemove', handleDocumentMousemove);
+  document.addEventListener("mousemove", handleDocumentMousemove);
   (0,_utils__WEBPACK_IMPORTED_MODULE_2__.disableUserSelect)();
 }
 /**
@@ -1301,7 +1303,7 @@ function handleDocumentMousedown(e) {
 
 
 function handleDocumentMousemove(e) {
-  var svg = overlay.parentNode.querySelector('svg.drawingLayer');
+  var svg = overlay.parentNode.querySelector("svg.drawingLayer");
   var rect = svg.getBoundingClientRect();
 
   if (originX + (e.clientX - originX) < rect.right) {
@@ -1322,7 +1324,7 @@ function handleDocumentMousemove(e) {
 function handleDocumentMouseup(e) {
   var rects;
 
-  if (_type !== 'area' && (rects = getSelectionRects())) {
+  if (_type !== "area" && (rects = getSelectionRects())) {
     var svg = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(rects[0].left, rects[0].top);
     saveRect(_type, _toConsumableArray(rects).map(function (r) {
       return {
@@ -1332,8 +1334,8 @@ function handleDocumentMouseup(e) {
         height: r.height
       };
     }));
-  } else if (_type === 'area' && overlay) {
-    var _svg = overlay.parentNode.querySelector('svg.drawingLayer');
+  } else if (_type === "area" && overlay) {
+    var _svg = overlay.parentNode.querySelector("svg.drawingLayer");
 
     var rect = _svg.getBoundingClientRect();
 
@@ -1345,7 +1347,7 @@ function handleDocumentMouseup(e) {
     }]);
     overlay.parentNode.removeChild(overlay);
     overlay = null;
-    document.removeEventListener('mousemove', handleDocumentMousemove);
+    document.removeEventListener("mousemove", handleDocumentMousemove);
     (0,_utils__WEBPACK_IMPORTED_MODULE_2__.enableUserSelect)();
   }
 }
@@ -1365,7 +1367,7 @@ function handleDocumentKeyup(e) {
     if (overlay && overlay.parentNode) {
       overlay.parentNode.removeChild(overlay);
       overlay = null;
-      document.removeEventListener('mousemove', handleDocumentMousemove);
+      document.removeEventListener("mousemove", handleDocumentMousemove);
     }
   }
 }
@@ -1390,10 +1392,10 @@ function saveRect(type, rects, color) {
   var boundingRect = svg.getBoundingClientRect();
 
   if (!color) {
-    if (type === 'highlight') {
-      color = 'FFFF00';
-    } else if (type === 'strikeout') {
-      color = 'FF0000';
+    if (type === "highlight") {
+      color = "FFFF00";
+    } else if (type === "strikeout") {
+      color = "FF0000";
     }
   } // Initialize the annotation
 
@@ -1404,7 +1406,7 @@ function saveRect(type, rects, color) {
     rectangles: _toConsumableArray(rects).map(function (r) {
       var offset = 0;
 
-      if (type === 'strikeout') {
+      if (type === "strikeout") {
         offset = r.height / 2;
       }
 
@@ -1424,7 +1426,7 @@ function saveRect(type, rects, color) {
   } // Special treatment for area as it only supports a single rect
 
 
-  if (type === 'area') {
+  if (type === "area") {
     var rect = annotation.rectangles[0];
     delete annotation.rectangles;
     annotation.x = rect.x;
@@ -1455,9 +1457,9 @@ function enableRect(type) {
   }
 
   _enabled = true;
-  document.addEventListener('mouseup', handleDocumentMouseup);
-  document.addEventListener('mousedown', handleDocumentMousedown);
-  document.addEventListener('keyup', handleDocumentKeyup);
+  document.addEventListener("mouseup", handleDocumentMouseup);
+  document.addEventListener("mousedown", handleDocumentMousedown);
+  document.addEventListener("keyup", handleDocumentKeyup);
 }
 /**
  * Disable rect behavior
@@ -1469,9 +1471,26 @@ function disableRect() {
   }
 
   _enabled = false;
-  document.removeEventListener('mouseup', handleDocumentMouseup);
-  document.removeEventListener('mousedown', handleDocumentMousedown);
-  document.removeEventListener('keyup', handleDocumentKeyup);
+  document.removeEventListener("mouseup", handleDocumentMouseup);
+  document.removeEventListener("mousedown", handleDocumentMousedown);
+  document.removeEventListener("keyup", handleDocumentKeyup);
+}
+/**
+ * Highlight the selected text.
+ * @param {*} type The type of selection.
+ * @param {*} event The event.
+ */
+
+function highlightText(type, event) {
+  // Set the tool as enabled and set the type.
+  _enabled = true;
+  _type = type; // Perform the select.
+
+  handleDocumentMouseup(event); // Clear the selected text.
+
+  var selection = window.getSelection();
+  selection.removeAllRanges();
+  _enabled = false;
 }
 
 /***/ }),
