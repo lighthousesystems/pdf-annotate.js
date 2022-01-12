@@ -154,62 +154,65 @@ var OVERLAY_BORDER_SIZE = 3;
  */
 
 function createEditOverlay(target) {
-  destroyEditOverlay();
-  overlay = document.createElement('div');
-  var anchor = document.createElement('a');
+  destroyEditOverlay(); // Create and dispatch an event that can be listened to outside of pdf-annotate.
+
+  var event = new Event("annotation:select");
+  document.dispatchEvent(event);
+  overlay = document.createElement("div");
+  var anchor = document.createElement("a");
   var parentNode = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.findSVGContainer)(target).parentNode;
-  var id = target.getAttribute('data-pdf-annotate-id');
+  var id = target.getAttribute("data-pdf-annotate-id");
   var rect = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getAnnotationRect)(target);
   var styleLeft = rect.left - OVERLAY_BORDER_SIZE;
   var styleTop = rect.top - OVERLAY_BORDER_SIZE;
-  overlay.setAttribute('id', 'pdf-annotate-edit-overlay');
-  overlay.setAttribute('data-target-id', id);
-  overlay.style.boxSizing = 'content-box';
-  overlay.style.position = 'absolute';
+  overlay.setAttribute("id", "pdf-annotate-edit-overlay");
+  overlay.setAttribute("data-target-id", id);
+  overlay.style.boxSizing = "content-box";
+  overlay.style.position = "absolute";
   overlay.style.top = "".concat(styleTop, "px");
   overlay.style.left = "".concat(styleLeft, "px");
   overlay.style.width = "".concat(rect.width, "px");
   overlay.style.height = "".concat(rect.height, "px");
   overlay.style.border = "".concat(OVERLAY_BORDER_SIZE, "px solid ").concat(_utils__WEBPACK_IMPORTED_MODULE_3__.BORDER_COLOR);
   overlay.style.borderRadius = "".concat(OVERLAY_BORDER_SIZE, "px");
-  anchor.innerHTML = '×';
-  anchor.setAttribute('href', 'javascript://');
-  anchor.style.background = '#fff';
-  anchor.style.borderRadius = '20px';
-  anchor.style.border = '1px solid #bbb';
-  anchor.style.color = '#bbb';
-  anchor.style.fontSize = '16px';
-  anchor.style.padding = '2px';
-  anchor.style.textAlign = 'center';
-  anchor.style.textDecoration = 'none';
-  anchor.style.position = 'absolute';
-  anchor.style.top = '-13px';
-  anchor.style.right = '-13px';
-  anchor.style.width = '25px';
-  anchor.style.height = '25px';
+  anchor.innerHTML = "×";
+  anchor.setAttribute("href", "javascript://");
+  anchor.style.background = "#fff";
+  anchor.style.borderRadius = "20px";
+  anchor.style.border = "1px solid #bbb";
+  anchor.style.color = "#bbb";
+  anchor.style.fontSize = "16px";
+  anchor.style.padding = "2px";
+  anchor.style.textAlign = "center";
+  anchor.style.textDecoration = "none";
+  anchor.style.position = "absolute";
+  anchor.style.top = "-13px";
+  anchor.style.right = "-13px";
+  anchor.style.width = "25px";
+  anchor.style.height = "25px";
   overlay.appendChild(anchor);
   parentNode.appendChild(overlay);
-  document.addEventListener('click', handleDocumentClick);
-  document.addEventListener('keyup', handleDocumentKeyup);
-  document.addEventListener('mousedown', handleDocumentMousedown);
-  anchor.addEventListener('click', deleteAnnotation);
-  anchor.addEventListener('mouseover', function () {
-    anchor.style.color = '#35A4DC';
-    anchor.style.borderColor = '#999';
-    anchor.style.boxShadow = '0 1px 1px #ccc';
+  document.addEventListener("click", handleDocumentClick);
+  document.addEventListener("keyup", handleDocumentKeyup);
+  document.addEventListener("mousedown", handleDocumentMousedown);
+  anchor.addEventListener("click", deleteAnnotation);
+  anchor.addEventListener("mouseover", function () {
+    anchor.style.color = "#35A4DC";
+    anchor.style.borderColor = "#999";
+    anchor.style.boxShadow = "0 1px 1px #ccc";
   });
-  anchor.addEventListener('mouseout', function () {
-    anchor.style.color = '#bbb';
-    anchor.style.borderColor = '#bbb';
-    anchor.style.boxShadow = '';
+  anchor.addEventListener("mouseout", function () {
+    anchor.style.color = "#bbb";
+    anchor.style.borderColor = "#bbb";
+    anchor.style.boxShadow = "";
   });
-  overlay.addEventListener('mouseover', function () {
+  overlay.addEventListener("mouseover", function () {
     if (!isDragging) {
-      anchor.style.display = '';
+      anchor.style.display = "";
     }
   });
-  overlay.addEventListener('mouseout', function () {
-    anchor.style.display = 'none';
+  overlay.addEventListener("mouseout", function () {
+    anchor.style.display = "none";
   });
 }
 /**
@@ -223,11 +226,14 @@ function destroyEditOverlay() {
     overlay = null;
   }
 
-  document.removeEventListener('click', handleDocumentClick);
-  document.removeEventListener('keyup', handleDocumentKeyup);
-  document.removeEventListener('mousedown', handleDocumentMousedown);
-  document.removeEventListener('mousemove', handleDocumentMousemove);
-  document.removeEventListener('mouseup', handleDocumentMouseup);
+  document.removeEventListener("click", handleDocumentClick);
+  document.removeEventListener("keyup", handleDocumentKeyup);
+  document.removeEventListener("mousedown", handleDocumentMousedown);
+  document.removeEventListener("mousemove", handleDocumentMousemove);
+  document.removeEventListener("mouseup", handleDocumentMouseup); // Create and dispatch an event that can be listened to outside of pdf-annotate.
+
+  var event = new Event("annotation:deselect");
+  document.dispatchEvent(event);
   (0,_utils__WEBPACK_IMPORTED_MODULE_3__.enableUserSelect)();
 }
 /**
@@ -240,9 +246,9 @@ function deleteAnnotation() {
     return;
   }
 
-  var annotationId = overlay.getAttribute('data-target-id');
+  var annotationId = overlay.getAttribute("data-target-id");
   var nodes = document.querySelectorAll("[data-pdf-annotate-id=\"".concat(annotationId, "\"]"));
-  var svg = overlay.parentNode.querySelector('svg.drawingLayer');
+  var svg = overlay.parentNode.querySelector("svg.drawingLayer");
 
   var _getMetadata = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getMetadata)(svg),
       documentId = _getMetadata.documentId;
@@ -267,7 +273,7 @@ function handleDocumentClick(e) {
   } // Remove current overlay
 
 
-  var overlay = document.getElementById('pdf-annotate-edit-overlay');
+  var overlay = document.getElementById("pdf-annotate-edit-overlay");
 
   if (overlay) {
     if (isDragging || e.target === overlay) {
@@ -285,7 +291,7 @@ function handleDocumentClick(e) {
 
 
 function handleDocumentKeyup(e) {
-  if (overlay && e.keyCode === 46 && e.target.nodeName.toLowerCase() !== 'textarea' && e.target.nodeName.toLowerCase() !== 'input') {
+  if (overlay && e.keyCode === 46 && e.target.nodeName.toLowerCase() !== "textarea" && e.target.nodeName.toLowerCase() !== "input") {
     deleteAnnotation();
   }
 }
@@ -303,11 +309,11 @@ function handleDocumentMousedown(e) {
   // It doesn't make sense to allow repositioning these types of annotations.
 
 
-  var annotationId = overlay.getAttribute('data-target-id');
+  var annotationId = overlay.getAttribute("data-target-id");
   var target = document.querySelector("[data-pdf-annotate-id=\"".concat(annotationId, "\"]"));
-  var type = target.getAttribute('data-pdf-annotate-type');
+  var type = target.getAttribute("data-pdf-annotate-type");
 
-  if (type === 'highlight' || type === 'strikeout') {
+  if (type === "highlight" || type === "strikeout") {
     return;
   }
 
@@ -316,11 +322,11 @@ function handleDocumentMousedown(e) {
   dragOffsetY = e.clientY;
   dragStartX = overlay.offsetLeft;
   dragStartY = overlay.offsetTop;
-  overlay.style.background = 'rgba(255, 255, 255, 0.7)';
-  overlay.style.cursor = 'move';
-  overlay.querySelector('a').style.display = 'none';
-  document.addEventListener('mousemove', handleDocumentMousemove);
-  document.addEventListener('mouseup', handleDocumentMouseup);
+  overlay.style.background = "rgba(255, 255, 255, 0.7)";
+  overlay.style.cursor = "move";
+  overlay.querySelector("a").style.display = "none";
+  document.addEventListener("mousemove", handleDocumentMousemove);
+  document.addEventListener("mouseup", handleDocumentMouseup);
   (0,_utils__WEBPACK_IMPORTED_MODULE_3__.disableUserSelect)();
 }
 /**
@@ -331,7 +337,7 @@ function handleDocumentMousedown(e) {
 
 
 function handleDocumentMousemove(e) {
-  var annotationId = overlay.getAttribute('data-target-id');
+  var annotationId = overlay.getAttribute("data-target-id");
   var parentNode = overlay.parentNode;
   var rect = parentNode.getBoundingClientRect();
   var y = dragStartY + (e.clientY - dragOffsetY);
@@ -357,15 +363,15 @@ function handleDocumentMousemove(e) {
 
 
 function handleDocumentMouseup(e) {
-  var annotationId = overlay.getAttribute('data-target-id');
+  var annotationId = overlay.getAttribute("data-target-id");
   var target = document.querySelectorAll("[data-pdf-annotate-id=\"".concat(annotationId, "\"]"));
-  var type = target[0].getAttribute('data-pdf-annotate-type');
-  var svg = overlay.parentNode.querySelector('svg.drawingLayer');
+  var type = target[0].getAttribute("data-pdf-annotate-type");
+  var svg = overlay.parentNode.querySelector("svg.drawingLayer");
 
   var _getMetadata2 = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getMetadata)(svg),
       documentId = _getMetadata2.documentId;
 
-  overlay.querySelector('a').style.display = '';
+  overlay.querySelector("a").style.display = "";
 
   function getDelta(propX, propY) {
     return calcDelta(parseInt(target[0].getAttribute(propX), 10), parseInt(target[0].getAttribute(propY), 10));
@@ -383,27 +389,27 @@ function handleDocumentMouseup(e) {
   }
 
   _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().getAnnotation(documentId, annotationId).then(function (annotation) {
-    if (['area', 'highlight', 'point', 'textbox'].indexOf(type) > -1) {
-      var _getDelta = getDelta('x', 'y'),
+    if (["area", "highlight", "point", "textbox"].indexOf(type) > -1) {
+      var _getDelta = getDelta("x", "y"),
           deltaX = _getDelta.deltaX,
           deltaY = _getDelta.deltaY;
 
       _toConsumableArray(target).forEach(function (t, i) {
         if (deltaY !== 0) {
-          var modelY = parseInt(t.getAttribute('y'), 10) + deltaY;
+          var modelY = parseInt(t.getAttribute("y"), 10) + deltaY;
           var viewY = modelY;
 
-          if (type === 'textbox') {
+          if (type === "textbox") {
             viewY += annotation.size;
           }
 
-          if (type === 'point') {
+          if (type === "point") {
             viewY = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.scaleUp)(svg, {
               viewY: viewY
             }).viewY;
           }
 
-          t.setAttribute('y', viewY);
+          t.setAttribute("y", viewY);
 
           if (annotation.rectangles) {
             annotation.rectangles[i].y = modelY;
@@ -413,16 +419,16 @@ function handleDocumentMouseup(e) {
         }
 
         if (deltaX !== 0) {
-          var modelX = parseInt(t.getAttribute('x'), 10) + deltaX;
+          var modelX = parseInt(t.getAttribute("x"), 10) + deltaX;
           var viewX = modelX;
 
-          if (type === 'point') {
+          if (type === "point") {
             viewX = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.scaleUp)(svg, {
               viewX: viewX
             }).viewX;
           }
 
-          t.setAttribute('x', viewX);
+          t.setAttribute("x", viewX);
 
           if (annotation.rectangles) {
             annotation.rectangles[i].x = modelX;
@@ -445,7 +451,7 @@ function handleDocumentMouseup(e) {
       //     }
       //   });
 
-    } else if (type === 'drawing') {
+    } else if (type === "drawing") {
       var rect = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.scaleDown)(svg, (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getAnnotationRect)(target[0]));
 
       var _annotation$lines$ = _slicedToArray(annotation.lines[0], 2),
@@ -477,10 +483,10 @@ function handleDocumentMouseup(e) {
   setTimeout(function () {
     isDragging = false;
   }, 0);
-  overlay.style.background = '';
-  overlay.style.cursor = '';
-  document.removeEventListener('mousemove', handleDocumentMousemove);
-  document.removeEventListener('mouseup', handleDocumentMouseup);
+  overlay.style.background = "";
+  overlay.style.cursor = "";
+  document.removeEventListener("mousemove", handleDocumentMousemove);
+  document.removeEventListener("mouseup", handleDocumentMouseup);
   (0,_utils__WEBPACK_IMPORTED_MODULE_3__.enableUserSelect)();
 }
 /**
@@ -504,9 +510,8 @@ function enableEdit() {
   }
 
   _enabled = true;
-  (0,_event__WEBPACK_IMPORTED_MODULE_2__.addEventListener)('annotation:click', handleAnnotationClick);
+  (0,_event__WEBPACK_IMPORTED_MODULE_2__.addEventListener)("annotation:click", handleAnnotationClick);
 }
-;
 /**
  * Disable edit mode behavior.
  */
@@ -519,9 +524,8 @@ function disableEdit() {
   }
 
   _enabled = false;
-  (0,_event__WEBPACK_IMPORTED_MODULE_2__.removeEventListener)('annotation:click', handleAnnotationClick);
+  (0,_event__WEBPACK_IMPORTED_MODULE_2__.removeEventListener)("annotation:click", handleAnnotationClick);
 }
-;
 
 /***/ }),
 
@@ -639,6 +643,7 @@ __webpack_require__.r(__webpack_exports__);
   disableRect: _rect__WEBPACK_IMPORTED_MODULE_4__.disableRect,
   enableRect: _rect__WEBPACK_IMPORTED_MODULE_4__.enableRect,
   highlightText: _rect__WEBPACK_IMPORTED_MODULE_4__.highlightText,
+  editRect: _rect__WEBPACK_IMPORTED_MODULE_4__.editRect,
   disableText: _text__WEBPACK_IMPORTED_MODULE_5__.disableText,
   enableText: _text__WEBPACK_IMPORTED_MODULE_5__.enableText,
   setText: _text__WEBPACK_IMPORTED_MODULE_5__.setText,
@@ -1222,11 +1227,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "enableRect": () => (/* binding */ enableRect),
 /* harmony export */   "disableRect": () => (/* binding */ disableRect),
-/* harmony export */   "highlightText": () => (/* binding */ highlightText)
+/* harmony export */   "highlightText": () => (/* binding */ highlightText),
+/* harmony export */   "editRect": () => (/* binding */ editRect)
 /* harmony export */ });
 /* harmony import */ var _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../PDFJSAnnotate */ "./src/PDFJSAnnotate.js");
 /* harmony import */ var _render_appendChild__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../render/appendChild */ "./src/render/appendChild.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils */ "./src/UI/utils.js");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -1445,6 +1455,15 @@ function saveRect(type, rects, color) {
   });
 }
 /**
+ * Edit a rect annotation.
+ */
+
+
+function updateRect(annotationId, annotation) {
+  // Add the annotation
+  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().editAnnotation(documentId, annotationId, annotation);
+}
+/**
  * Enable rect behavior
  */
 
@@ -1477,8 +1496,8 @@ function disableRect() {
 }
 /**
  * Highlight the selected text.
- * @param {*} type The type of selection.
- * @param {*} event The event.
+ * @param {string} type The type of selection.
+ * @param {Event} event The event.
  */
 
 function highlightText(type, event) {
@@ -1491,6 +1510,33 @@ function highlightText(type, event) {
   var selection = window.getSelection();
   selection.removeAllRanges();
   _enabled = false;
+}
+function editRect(_x, _x2, _x3) {
+  return _editRect.apply(this, arguments);
+}
+
+function _editRect() {
+  _editRect = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(type, annotationId, color) {
+    var annotation;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.next = 2;
+            return _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().getAnnotation("", annotationId);
+
+          case 2:
+            annotation = _context.sent;
+            updateRect(annotationId, annotation);
+
+          case 4:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+  return _editRect.apply(this, arguments);
 }
 
 /***/ }),
@@ -3311,13 +3357,15 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function renderLine(a) {
-  var group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
   (0,_utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__["default"])(group, {
-    stroke: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || '#f00'),
-    strokeWidth: 1
+    stroke: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || "#f00"),
+    strokeWidth: 1,
+    opacity: a.opacity || 1,
+    color: a.color
   });
   a.rectangles.forEach(function (r) {
-    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     (0,_utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__["default"])(line, {
       x1: r.x,
       y1: r.y,
@@ -3463,10 +3511,10 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function renderRect(a) {
-  if (a.type === 'highlight') {
-    var group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  if (a.type === "highlight") {
+    var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
     (0,_utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__["default"])(group, {
-      fill: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || '#ff0'),
+      fill: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || "#ff0"),
       fillOpacity: 0.2
     });
     a.rectangles.forEach(function (r) {
@@ -3476,15 +3524,15 @@ function renderRect(a) {
   } else {
     var rect = createRect(a);
     (0,_utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__["default"])(rect, {
-      stroke: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || '#f00'),
-      fill: 'none'
+      stroke: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || "#f00"),
+      fill: "none"
     });
     return rect;
   }
 }
 
 function createRect(r) {
-  var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   (0,_utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__["default"])(rect, {
     x: r.x,
     y: r.y,

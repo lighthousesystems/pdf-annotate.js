@@ -213,6 +213,18 @@ function saveRect(type, rects, color) {
 }
 
 /**
+ * Edit a rect annotation.
+ */
+function updateRect(annotationId, annotation) {
+  // Add the annotation
+  PDFJSAnnotate.getStoreAdapter().editAnnotation(
+    documentId,
+    annotationId,
+    annotation
+  );
+}
+
+/**
  * Enable rect behavior
  */
 export function enableRect(type) {
@@ -244,8 +256,8 @@ export function disableRect() {
 
 /**
  * Highlight the selected text.
- * @param {*} type The type of selection.
- * @param {*} event The event.
+ * @param {string} type The type of selection.
+ * @param {Event} event The event.
  */
 export function highlightText(type, event) {
   // Set the tool as enabled and set the type.
@@ -259,4 +271,13 @@ export function highlightText(type, event) {
   let selection = window.getSelection();
   selection.removeAllRanges();
   _enabled = false;
+}
+
+export async function editRect(type, annotationId, color) {
+  const annotation = await PDFJSAnnotate.getStoreAdapter().getAnnotation(
+    "",
+    annotationId
+  );
+
+  updateRect(annotationId, annotation);
 }
