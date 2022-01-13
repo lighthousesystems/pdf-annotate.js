@@ -213,18 +213,6 @@ function saveRect(type, rects, color) {
 }
 
 /**
- * Edit a rect annotation.
- */
-function updateRect(annotationId, annotation) {
-  // Add the annotation
-  PDFJSAnnotate.getStoreAdapter().editAnnotation(
-    documentId,
-    annotationId,
-    annotation
-  );
-}
-
-/**
  * Enable rect behavior
  */
 export function enableRect(type) {
@@ -273,11 +261,16 @@ export function highlightText(type, event) {
   _enabled = false;
 }
 
-export async function editRect(type, annotationId, color) {
+export async function editRect(type, annotationId, attributes) {
   const annotation = await PDFJSAnnotate.getStoreAdapter().getAnnotation(
     "",
     annotationId
   );
 
-  updateRect(annotationId, annotation);
+  annotation.color = attributes.color || annotation.color;
+  annotation.stroke = `#${attributes.stroke}`;
+  annotation.opacity = attributes.opacity || annotation.opacity;
+  annotation.strokeWidth = attributes.strokeWidth || annotation.strokeWidth;
+
+  PDFJSAnnotate.getStoreAdapter().editAnnotation("", annotationId, annotation);
 }

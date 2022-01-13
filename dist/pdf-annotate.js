@@ -1455,15 +1455,6 @@ function saveRect(type, rects, color) {
   });
 }
 /**
- * Edit a rect annotation.
- */
-
-
-function updateRect(annotationId, annotation) {
-  // Add the annotation
-  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().editAnnotation(documentId, annotationId, annotation);
-}
-/**
  * Enable rect behavior
  */
 
@@ -1516,7 +1507,7 @@ function editRect(_x, _x2, _x3) {
 }
 
 function _editRect() {
-  _editRect = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(type, annotationId, color) {
+  _editRect = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(type, annotationId, attributes) {
     var annotation;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -1527,9 +1518,13 @@ function _editRect() {
 
           case 2:
             annotation = _context.sent;
-            updateRect(annotationId, annotation);
+            annotation.color = attributes.color || annotation.color;
+            annotation.stroke = "#".concat(attributes.stroke);
+            annotation.opacity = attributes.opacity || annotation.opacity;
+            annotation.strokeWidth = attributes.strokeWidth || annotation.strokeWidth;
+            _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().editAnnotation("", annotationId, annotation);
 
-          case 4:
+          case 8:
           case "end":
             return _context.stop();
         }
@@ -3360,7 +3355,7 @@ function renderLine(a) {
   var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
   (0,_utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__["default"])(group, {
     stroke: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || "#f00"),
-    strokeWidth: 1,
+    strokeWidth: a.strokeWidth || 1,
     opacity: a.opacity || 1,
     color: a.color
   });
