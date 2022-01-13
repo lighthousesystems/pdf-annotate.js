@@ -1556,7 +1556,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var _enabled = false;
-var input;
+var textArea;
 
 var _textSize;
 
@@ -1569,23 +1569,24 @@ var _textColor;
 
 
 function handleDocumentMouseup(e) {
-  if (input || !(0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(e.clientX, e.clientY)) {
+  if (textArea || !(0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(e.clientX, e.clientY)) {
     return;
   }
 
-  input = document.createElement("input");
-  input.setAttribute("id", "pdf-annotate-text-input");
-  input.setAttribute("placeholder", "Enter text");
-  input.style.border = "3px solid ".concat(_utils__WEBPACK_IMPORTED_MODULE_2__.BORDER_COLOR);
-  input.style.borderRadius = "3px";
-  input.style.position = "fixed";
-  input.style.top = "".concat(e.clientY, "px");
-  input.style.left = "".concat(e.clientX, "px");
-  input.style.fontSize = "".concat(_textSize, "px");
-  input.addEventListener("blur", handleInputBlur);
-  input.addEventListener("keyup", handleInputKeyup);
-  document.getElementById("content-wrapper").appendChild(input);
-  input.focus();
+  textArea = document.createElement("textarea");
+  textArea.setAttribute("id", "pdf-annotate-text-input");
+  textArea.style.border = "3px solid ".concat(_utils__WEBPACK_IMPORTED_MODULE_2__.BORDER_COLOR);
+  textArea.style.borderRadius = "3px";
+  textArea.style.position = "fixed";
+  textArea.style.top = "".concat(e.clientY, "px");
+  textArea.style.left = "".concat(e.clientX, "px");
+  textArea.style.fontSize = "".concat(_textSize, "px");
+  textArea.style.background = "transparent";
+  textArea.style.whiteSpace = "pre-line";
+  textArea.addEventListener("blur", handleInputBlur);
+  textArea.addEventListener("keyup", handleInputKeyup);
+  document.getElementById("content-wrapper").appendChild(textArea);
+  textArea.focus();
 }
 /**
  * Handle input.blur event
@@ -1605,8 +1606,6 @@ function handleInputBlur() {
 function handleInputKeyup(e) {
   if (e.keyCode === 27) {
     closeInput();
-  } else if (e.keyCode === 13) {
-    saveText();
   }
 }
 /**
@@ -1615,9 +1614,9 @@ function handleInputKeyup(e) {
 
 
 function saveText() {
-  if (input.value.trim().length > 0) {
-    var clientX = parseInt(input.style.left, 10);
-    var clientY = parseInt(input.style.top, 10);
+  if (textArea.value.trim().length > 0) {
+    var clientX = parseInt(textArea.style.left, 10);
+    var clientY = parseInt(textArea.style.top, 10);
     var svg = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(clientX, clientY);
 
     if (!svg) {
@@ -1633,12 +1632,12 @@ function saveText() {
       type: "textbox",
       size: _textSize,
       color: _textColor,
-      content: input.value.trim()
+      content: textArea.value.trim()
     }, (0,_utils__WEBPACK_IMPORTED_MODULE_2__.scaleDown)(svg, {
       x: clientX - rect.left,
       y: clientY - rect.top,
-      width: input.offsetWidth,
-      height: input.offsetHeight
+      width: textArea.offsetWidth,
+      height: textArea.offsetHeight
     }));
     _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().addAnnotation(documentId, pageNumber, annotation).then(function (annotation) {
       (0,_render_appendChild__WEBPACK_IMPORTED_MODULE_1__["default"])(svg, annotation);
@@ -1653,11 +1652,12 @@ function saveText() {
 
 
 function closeInput() {
-  if (input) {
-    input.removeEventListener("blur", handleInputBlur);
-    input.removeEventListener("keyup", handleInputKeyup);
-    document.getElementById("content-wrapper").removeChild(input);
-    input = null;
+  if (textArea) {
+    textArea.removeEventListener("blur", handleInputBlur);
+    textArea.removeEventListener("keyup", handleInputKeyup);
+    document.getElementById("content-wrapper").removeChild(textArea);
+    textArea = null;
+    disableText();
   }
 }
 /**
@@ -3563,15 +3563,32 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function renderText(a) {
-  var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
   (0,_utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__["default"])(text, {
     x: a.x,
     y: a.y + parseInt(a.size, 10),
-    fill: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || '#000'),
+    fill: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || "#000"),
     fontSize: a.size
   });
-  text.innerHTML = a.content;
+  text.innerHTML = processTextContent(a);
   return text;
+}
+
+function processTextContent(comment) {
+  var lines = comment.content.split("\n");
+  var tspans = [];
+
+  for (var index = 0; index < lines.length; index++) {
+    var line = lines[index];
+
+    if (line == " " || line == "") {
+      tspans.push("<tspan visibility=\"hidden\" dy=\"1em\">.</tspan>");
+    } else {
+      tspans.push("<tspan x=\"".concat(comment.x, "\" dy=\"1em\">").concat(line, "</tspan>"));
+    }
+  }
+
+  return tspans.join("");
 }
 
 /***/ }),
