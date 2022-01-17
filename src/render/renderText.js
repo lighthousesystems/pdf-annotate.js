@@ -32,7 +32,7 @@ function processTextContent(comment) {
     if (line == " " || line == "") {
       tspans.push(`<tspan visibility="hidden" dy="1em">.</tspan>`);
     } else {
-      tspans.push(`<tspan x="${comment.x}" dy="1em">${line}</tspan>`);
+      tspans.push(`<tspan x="inherit" dy="1em">${line}</tspan>`);
     }
   }
 

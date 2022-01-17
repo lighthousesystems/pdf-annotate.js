@@ -893,7 +893,7 @@ function approximateFraction(x) {
 
 function getOutputScale(ctx) {
   var devicePixelRatio = window.devicePixelRatio || 1;
-  var backingStoreRatio = ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1;
+  var backingStoreRatio = ctx.webkitBackingStorePixelRatio || 1;
   var pixelRatio = devicePixelRatio / backingStoreRatio;
   return {
     sx: pixelRatio,
@@ -3601,7 +3601,7 @@ function processTextContent(comment) {
     if (line == " " || line == "") {
       tspans.push("<tspan visibility=\"hidden\" dy=\"1em\">.</tspan>");
     } else {
-      tspans.push("<tspan x=\"".concat(comment.x, "\" dy=\"1em\">").concat(line, "</tspan>"));
+      tspans.push("<tspan x=\"inherit\" dy=\"1em\">".concat(line, "</tspan>"));
     }
   }
 
