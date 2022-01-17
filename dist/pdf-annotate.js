@@ -111,6 +111,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "deleteAnnotationFromId": () => (/* binding */ deleteAnnotationFromId),
 /* harmony export */   "enableEdit": () => (/* binding */ enableEdit),
 /* harmony export */   "disableEdit": () => (/* binding */ disableEdit)
 /* harmony export */ });
@@ -154,10 +155,7 @@ var OVERLAY_BORDER_SIZE = 3;
  */
 
 function createEditOverlay(target) {
-  destroyEditOverlay(); // Create and dispatch an event that can be listened to outside of pdf-annotate.
-
-  var event = new Event("annotation:select");
-  document.dispatchEvent(event);
+  destroyEditOverlay();
   overlay = document.createElement("div");
   var anchor = document.createElement("a");
   var parentNode = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.findSVGContainer)(target).parentNode;
@@ -213,7 +211,10 @@ function createEditOverlay(target) {
   });
   overlay.addEventListener("mouseout", function () {
     anchor.style.display = "none";
-  });
+  }); // Create and dispatch an event that can be listened to outside of pdf-annotate.
+
+  var event = new Event("annotation:select");
+  document.dispatchEvent(event);
 }
 /**
  * Destroy the edit overlay if it exists.
@@ -257,7 +258,10 @@ function deleteAnnotation() {
     n.parentNode.removeChild(n);
   });
 
-  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().deleteAnnotation(documentId, annotationId);
+  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().deleteAnnotation(documentId, annotationId); // Create and dispatch an event that can be listened to outside of pdf-annotate.
+
+  var event = new Event("annotation:delete");
+  document.dispatchEvent(event);
   destroyEditOverlay();
 }
 /**
@@ -499,10 +503,16 @@ function handleDocumentMouseup(e) {
 function handleAnnotationClick(target) {
   createEditOverlay(target);
 }
+
+function deleteAnnotationFromId(annotationId) {
+  var _getMetadata3 = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getMetadata)(svg),
+      documentId = _getMetadata3.documentId;
+
+  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().deleteAnnotation(documentId, annotationId);
+}
 /**
  * Enable edit mode behavior.
  */
-
 
 function enableEdit() {
   if (_enabled) {
@@ -637,6 +647,7 @@ __webpack_require__.r(__webpack_exports__);
   enableEdit: _edit__WEBPACK_IMPORTED_MODULE_1__.enableEdit,
   disablePen: _pen__WEBPACK_IMPORTED_MODULE_2__.disablePen,
   enablePen: _pen__WEBPACK_IMPORTED_MODULE_2__.enablePen,
+  deleteAnnotationFromId: _edit__WEBPACK_IMPORTED_MODULE_1__.deleteAnnotationFromId,
   setPen: _pen__WEBPACK_IMPORTED_MODULE_2__.setPen,
   disablePoint: _point__WEBPACK_IMPORTED_MODULE_3__.disablePoint,
   enablePoint: _point__WEBPACK_IMPORTED_MODULE_3__.enablePoint,
@@ -691,14 +702,14 @@ var PAGE_TEMPLATE = "\n  <div style=\"visibility: hidden;\" class=\"page\" data-
  */
 
 function createPage(pageNumber) {
-  var temp = document.createElement('div');
+  var temp = document.createElement("div");
   temp.innerHTML = PAGE_TEMPLATE;
   var page = temp.children[0];
-  var canvas = page.querySelector('canvas');
-  page.setAttribute('id', "pageContainer".concat(pageNumber));
-  page.setAttribute('data-page-number', pageNumber);
+  var canvas = page.querySelector("canvas");
+  page.setAttribute("id", "pageContainer".concat(pageNumber));
+  page.setAttribute("data-page-number", pageNumber);
   canvas.mozOpaque = true;
-  canvas.setAttribute('id', "page".concat(pageNumber));
+  canvas.setAttribute("id", "page".concat(pageNumber));
   return page;
 }
 /**
@@ -725,9 +736,9 @@ function renderPage(pageNumber, renderOptions) {
         annotations = _ref2[1];
 
     var page = document.getElementById("pageContainer".concat(pageNumber));
-    var svg = page.querySelector('.drawingLayer');
-    var canvas = page.querySelector('.canvasWrapper canvas');
-    var canvasContext = canvas.getContext('2d', {
+    var svg = page.querySelector(".drawingLayer");
+    var canvas = page.querySelector(".canvasWrapper canvas");
+    var canvasContext = canvas.getContext("2d", {
       alpha: false
     });
     var viewport = pdfPage.getViewport({
@@ -754,7 +765,7 @@ function renderPage(pageNumber, renderOptions) {
           var textLayerBuilder = textLayerFactory.createTextLayerBuilder(textLayer, pageNumber - 1, viewport, false, eventBus);
           textLayerBuilder.setTextContent(textContent);
           textLayerBuilder.render();
-          var annotationLayer = page.querySelector('.annotationLayer');
+          var annotationLayer = page.querySelector(".annotationLayer");
           var annotationLayerFactory = new pdfjsViewer.DefaultAnnotationLayerFactory();
           var annotationLayerBuilder = annotationLayerFactory.createAnnotationLayerBuilder(annotationLayer, pdfPage);
           annotationLayerBuilder.render(viewport); // Enable a11y for annotations
@@ -772,7 +783,7 @@ function renderPage(pageNumber, renderOptions) {
       });
     }).then(function () {
       // Indicate that the page was loaded
-      page.setAttribute('data-loaded', 'true');
+      page.setAttribute("data-loaded", "true");
       return [pdfPage, annotations];
     });
   });
@@ -788,22 +799,22 @@ function renderPage(pageNumber, renderOptions) {
 
 function scalePage(pageNumber, viewport, context) {
   var page = document.getElementById("pageContainer".concat(pageNumber));
-  var canvas = page.querySelector('.canvasWrapper canvas');
-  var svg = page.querySelector('.drawingLayer');
-  var wrapper = page.querySelector('.canvasWrapper');
-  var textLayer = page.querySelector('.textLayer');
+  var canvas = page.querySelector(".canvasWrapper canvas");
+  var svg = page.querySelector(".drawingLayer");
+  var wrapper = page.querySelector(".canvasWrapper");
+  var textLayer = page.querySelector(".textLayer");
   var outputScale = getOutputScale(context);
   var transform = !outputScale.scaled ? null : [outputScale.sx, 0, 0, outputScale.sy, 0, 0];
   var sfx = approximateFraction(outputScale.sx);
   var sfy = approximateFraction(outputScale.sy); // Adjust width/height for scale
 
-  page.style.visibility = '';
+  page.style.visibility = "";
   canvas.width = roundToDivide(viewport.width * outputScale.sx, sfx[0]);
   canvas.height = roundToDivide(viewport.height * outputScale.sy, sfy[0]);
-  canvas.style.width = roundToDivide(viewport.width, sfx[1]) + 'px';
-  canvas.style.height = roundToDivide(viewport.height, sfx[1]) + 'px';
-  svg.setAttribute('width', viewport.width);
-  svg.setAttribute('height', viewport.height);
+  canvas.style.width = roundToDivide(viewport.width, sfx[1]) + "px";
+  canvas.style.height = roundToDivide(viewport.height, sfx[1]) + "px";
+  svg.setAttribute("width", viewport.width);
+  svg.setAttribute("height", viewport.height);
   svg.style.width = "".concat(viewport.width, "px");
   svg.style.height = "".concat(viewport.height, "px");
   page.style.width = "".concat(viewport.width, "px");
@@ -1333,10 +1344,11 @@ function handleDocumentMousemove(e) {
 
 function handleDocumentMouseup(e) {
   var rects;
+  var annotation;
 
   if (_type !== "area" && (rects = getSelectionRects())) {
     var svg = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(rects[0].left, rects[0].top);
-    saveRect(_type, _toConsumableArray(rects).map(function (r) {
+    annotation = saveRect(_type, _toConsumableArray(rects).map(function (r) {
       return {
         top: r.top,
         left: r.left,
@@ -1349,7 +1361,7 @@ function handleDocumentMouseup(e) {
 
     var rect = _svg.getBoundingClientRect();
 
-    saveRect(_type, [{
+    annotation = saveRect(_type, [{
       top: parseInt(overlay.style.top, 10) + rect.top,
       left: parseInt(overlay.style.left, 10) + rect.left,
       width: parseInt(overlay.style.width, 10),
@@ -1360,6 +1372,8 @@ function handleDocumentMouseup(e) {
     document.removeEventListener("mousemove", handleDocumentMousemove);
     (0,_utils__WEBPACK_IMPORTED_MODULE_2__.enableUserSelect)();
   }
+
+  return annotation;
 }
 /**
  * Handle document.keyup event
@@ -1450,9 +1464,11 @@ function saveRect(type, rects, color) {
       pageNumber = _getMetadata.pageNumber; // Add the annotation
 
 
-  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().addAnnotation(documentId, pageNumber, annotation).then(function (annotation) {
-    (0,_render_appendChild__WEBPACK_IMPORTED_MODULE_1__["default"])(svg, annotation);
+  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().addAnnotation(documentId, pageNumber, annotation).then(function (newAnnotation) {
+    annotation = newAnnotation;
+    (0,_render_appendChild__WEBPACK_IMPORTED_MODULE_1__["default"])(svg, newAnnotation);
   });
+  return annotation;
 }
 /**
  * Enable rect behavior
@@ -1496,11 +1512,12 @@ function highlightText(type, event) {
   _enabled = true;
   _type = type; // Perform the select.
 
-  handleDocumentMouseup(event); // Clear the selected text.
+  var annotation = handleDocumentMouseup(event); // Clear the selected text.
 
   var selection = window.getSelection();
   selection.removeAllRanges();
   _enabled = false;
+  return annotation;
 }
 function editRect(_x, _x2, _x3) {
   return _editRect.apply(this, arguments);

@@ -88,9 +88,11 @@ function handleDocumentMousemove(e) {
  */
 function handleDocumentMouseup(e) {
   let rects;
+  let annotation;
+
   if (_type !== "area" && (rects = getSelectionRects())) {
     let svg = findSVGAtPoint(rects[0].left, rects[0].top);
-    saveRect(
+    annotation = saveRect(
       _type,
       [...rects].map((r) => {
         return {
@@ -104,7 +106,7 @@ function handleDocumentMouseup(e) {
   } else if (_type === "area" && overlay) {
     let svg = overlay.parentNode.querySelector("svg.drawingLayer");
     let rect = svg.getBoundingClientRect();
-    saveRect(_type, [
+    annotation = saveRect(_type, [
       {
         top: parseInt(overlay.style.top, 10) + rect.top,
         left: parseInt(overlay.style.left, 10) + rect.left,
@@ -119,6 +121,8 @@ function handleDocumentMouseup(e) {
     document.removeEventListener("mousemove", handleDocumentMousemove);
     enableUserSelect();
   }
+
+  return annotation;
 }
 
 /**
@@ -207,9 +211,12 @@ function saveRect(type, rects, color) {
   // Add the annotation
   PDFJSAnnotate.getStoreAdapter()
     .addAnnotation(documentId, pageNumber, annotation)
-    .then((annotation) => {
-      appendChild(svg, annotation);
+    .then((newAnnotation) => {
+      annotation = newAnnotation;
+      appendChild(svg, newAnnotation);
     });
+
+  return annotation;
 }
 
 /**
@@ -253,12 +260,14 @@ export function highlightText(type, event) {
   _type = type;
 
   // Perform the select.
-  handleDocumentMouseup(event);
+  let annotation = handleDocumentMouseup(event);
 
   // Clear the selected text.
   let selection = window.getSelection();
   selection.removeAllRanges();
   _enabled = false;
+
+  return annotation;
 }
 
 export async function editRect(type, annotationId, attributes) {

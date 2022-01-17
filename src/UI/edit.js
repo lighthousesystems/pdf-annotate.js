@@ -28,10 +28,6 @@ const OVERLAY_BORDER_SIZE = 3;
 function createEditOverlay(target) {
   destroyEditOverlay();
 
-  // Create and dispatch an event that can be listened to outside of pdf-annotate.
-  const event = new Event("annotation:select");
-  document.dispatchEvent(event);
-
   overlay = document.createElement("div");
   let anchor = document.createElement("a");
   let parentNode = findSVGContainer(target).parentNode;
@@ -91,6 +87,10 @@ function createEditOverlay(target) {
   overlay.addEventListener("mouseout", () => {
     anchor.style.display = "none";
   });
+
+  // Create and dispatch an event that can be listened to outside of pdf-annotate.
+  const event = new Event("annotation:select");
+  document.dispatchEvent(event);
 }
 
 /**
@@ -135,6 +135,10 @@ function deleteAnnotation() {
   });
 
   PDFJSAnnotate.getStoreAdapter().deleteAnnotation(documentId, annotationId);
+
+  // Create and dispatch an event that can be listened to outside of pdf-annotate.
+  const event = new Event("annotation:delete");
+  document.dispatchEvent(event);
 
   destroyEditOverlay();
 }
@@ -371,6 +375,11 @@ function handleDocumentMouseup(e) {
  */
 function handleAnnotationClick(target) {
   createEditOverlay(target);
+}
+
+export function deleteAnnotationFromId(annotationId) {
+  let { documentId } = getMetadata(svg);
+  PDFJSAnnotate.getStoreAdapter().deleteAnnotation(documentId, annotationId);
 }
 
 /**
