@@ -3,7 +3,7 @@ import appendChild from "../render/appendChild";
 import { BORDER_COLOR, findSVGAtPoint, getMetadata, scaleDown } from "./utils";
 
 let _enabled = false;
-let input;
+let textArea;
 let _textSize;
 let _textColor;
 
@@ -13,25 +13,26 @@ let _textColor;
  * @param {Event} e The DOM event to handle
  */
 function handleDocumentMouseup(e) {
-  if (input || !findSVGAtPoint(e.clientX, e.clientY)) {
+  if (textArea || !findSVGAtPoint(e.clientX, e.clientY)) {
     return;
   }
 
-  input = document.createElement("input");
-  input.setAttribute("id", "pdf-annotate-text-input");
-  input.setAttribute("placeholder", "Enter text");
-  input.style.border = `3px solid ${BORDER_COLOR}`;
-  input.style.borderRadius = "3px";
-  input.style.position = "fixed";
-  input.style.top = `${e.clientY}px`;
-  input.style.left = `${e.clientX}px`;
-  input.style.fontSize = `${_textSize}px`;
+  textArea = document.createElement("textarea");
+  textArea.setAttribute("id", "pdf-annotate-text-input");
+  textArea.style.border = `3px solid ${BORDER_COLOR}`;
+  textArea.style.borderRadius = "3px";
+  textArea.style.position = "fixed";
+  textArea.style.top = `${e.clientY}px`;
+  textArea.style.left = `${e.clientX}px`;
+  textArea.style.fontSize = `${_textSize}px`;
+  textArea.style.background = "transparent";
+  textArea.style.whiteSpace = "pre-line";
 
-  input.addEventListener("blur", handleInputBlur);
-  input.addEventListener("keyup", handleInputKeyup);
+  textArea.addEventListener("blur", handleInputBlur);
+  textArea.addEventListener("keyup", handleInputKeyup);
 
-  document.getElementById("content-wrapper").appendChild(input);
-  input.focus();
+  document.getElementById("content-wrapper").appendChild(textArea);
+  textArea.focus();
 }
 
 /**
@@ -49,8 +50,6 @@ function handleInputBlur() {
 function handleInputKeyup(e) {
   if (e.keyCode === 27) {
     closeInput();
-  } else if (e.keyCode === 13) {
-    saveText();
   }
 }
 
@@ -58,9 +57,9 @@ function handleInputKeyup(e) {
  * Save a text annotation from input
  */
 function saveText() {
-  if (input.value.trim().length > 0) {
-    let clientX = parseInt(input.style.left, 10);
-    let clientY = parseInt(input.style.top, 10);
+  if (textArea.value.trim().length > 0) {
+    let clientX = parseInt(textArea.style.left, 10);
+    let clientY = parseInt(textArea.style.top, 10);
     let svg = findSVGAtPoint(clientX, clientY);
     if (!svg) {
       return;
@@ -73,13 +72,13 @@ function saveText() {
         type: "textbox",
         size: _textSize,
         color: _textColor,
-        content: input.value.trim(),
+        content: textArea.value.trim(),
       },
       scaleDown(svg, {
         x: clientX - rect.left,
         y: clientY - rect.top,
-        width: input.offsetWidth,
-        height: input.offsetHeight,
+        width: textArea.offsetWidth,
+        height: textArea.offsetHeight,
       })
     );
 
@@ -97,11 +96,13 @@ function saveText() {
  * Close the input
  */
 function closeInput() {
-  if (input) {
-    input.removeEventListener("blur", handleInputBlur);
-    input.removeEventListener("keyup", handleInputKeyup);
-    document.getElementById("content-wrapper").removeChild(input);
-    input = null;
+  if (textArea) {
+    textArea.removeEventListener("blur", handleInputBlur);
+    textArea.removeEventListener("keyup", handleInputKeyup);
+    document.getElementById("content-wrapper").removeChild(textArea);
+    textArea = null;
+
+    disableText();
   }
 }
 
