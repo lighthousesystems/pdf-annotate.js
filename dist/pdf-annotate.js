@@ -111,6 +111,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "deleteAnnotationFromId": () => (/* binding */ deleteAnnotationFromId),
 /* harmony export */   "enableEdit": () => (/* binding */ enableEdit),
 /* harmony export */   "disableEdit": () => (/* binding */ disableEdit)
 /* harmony export */ });
@@ -155,62 +156,65 @@ var OVERLAY_BORDER_SIZE = 3;
 
 function createEditOverlay(target) {
   destroyEditOverlay();
-  overlay = document.createElement('div');
-  var anchor = document.createElement('a');
+  overlay = document.createElement("div");
+  var anchor = document.createElement("a");
   var parentNode = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.findSVGContainer)(target).parentNode;
-  var id = target.getAttribute('data-pdf-annotate-id');
+  var id = target.getAttribute("data-pdf-annotate-id");
   var rect = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getAnnotationRect)(target);
   var styleLeft = rect.left - OVERLAY_BORDER_SIZE;
   var styleTop = rect.top - OVERLAY_BORDER_SIZE;
-  overlay.setAttribute('id', 'pdf-annotate-edit-overlay');
-  overlay.setAttribute('data-target-id', id);
-  overlay.style.boxSizing = 'content-box';
-  overlay.style.position = 'absolute';
+  overlay.setAttribute("id", "pdf-annotate-edit-overlay");
+  overlay.setAttribute("data-target-id", id);
+  overlay.style.boxSizing = "content-box";
+  overlay.style.position = "absolute";
   overlay.style.top = "".concat(styleTop, "px");
   overlay.style.left = "".concat(styleLeft, "px");
   overlay.style.width = "".concat(rect.width, "px");
   overlay.style.height = "".concat(rect.height, "px");
   overlay.style.border = "".concat(OVERLAY_BORDER_SIZE, "px solid ").concat(_utils__WEBPACK_IMPORTED_MODULE_3__.BORDER_COLOR);
   overlay.style.borderRadius = "".concat(OVERLAY_BORDER_SIZE, "px");
-  anchor.innerHTML = '×';
-  anchor.setAttribute('href', 'javascript://');
-  anchor.style.background = '#fff';
-  anchor.style.borderRadius = '20px';
-  anchor.style.border = '1px solid #bbb';
-  anchor.style.color = '#bbb';
-  anchor.style.fontSize = '16px';
-  anchor.style.padding = '2px';
-  anchor.style.textAlign = 'center';
-  anchor.style.textDecoration = 'none';
-  anchor.style.position = 'absolute';
-  anchor.style.top = '-13px';
-  anchor.style.right = '-13px';
-  anchor.style.width = '25px';
-  anchor.style.height = '25px';
+  anchor.innerHTML = "×";
+  anchor.setAttribute("href", "javascript://");
+  anchor.style.background = "#fff";
+  anchor.style.borderRadius = "20px";
+  anchor.style.border = "1px solid #bbb";
+  anchor.style.color = "#bbb";
+  anchor.style.fontSize = "16px";
+  anchor.style.padding = "2px";
+  anchor.style.textAlign = "center";
+  anchor.style.textDecoration = "none";
+  anchor.style.position = "absolute";
+  anchor.style.top = "-13px";
+  anchor.style.right = "-13px";
+  anchor.style.width = "25px";
+  anchor.style.height = "25px";
   overlay.appendChild(anchor);
   parentNode.appendChild(overlay);
-  document.addEventListener('click', handleDocumentClick);
-  document.addEventListener('keyup', handleDocumentKeyup);
-  document.addEventListener('mousedown', handleDocumentMousedown);
-  anchor.addEventListener('click', deleteAnnotation);
-  anchor.addEventListener('mouseover', function () {
-    anchor.style.color = '#35A4DC';
-    anchor.style.borderColor = '#999';
-    anchor.style.boxShadow = '0 1px 1px #ccc';
+  document.addEventListener("click", handleDocumentClick);
+  document.addEventListener("keyup", handleDocumentKeyup);
+  document.addEventListener("mousedown", handleDocumentMousedown);
+  anchor.addEventListener("click", deleteAnnotation);
+  anchor.addEventListener("mouseover", function () {
+    anchor.style.color = "#35A4DC";
+    anchor.style.borderColor = "#999";
+    anchor.style.boxShadow = "0 1px 1px #ccc";
   });
-  anchor.addEventListener('mouseout', function () {
-    anchor.style.color = '#bbb';
-    anchor.style.borderColor = '#bbb';
-    anchor.style.boxShadow = '';
+  anchor.addEventListener("mouseout", function () {
+    anchor.style.color = "#bbb";
+    anchor.style.borderColor = "#bbb";
+    anchor.style.boxShadow = "";
   });
-  overlay.addEventListener('mouseover', function () {
+  overlay.addEventListener("mouseover", function () {
     if (!isDragging) {
-      anchor.style.display = '';
+      anchor.style.display = "";
     }
   });
-  overlay.addEventListener('mouseout', function () {
-    anchor.style.display = 'none';
-  });
+  overlay.addEventListener("mouseout", function () {
+    anchor.style.display = "none";
+  }); // Create and dispatch an event that can be listened to outside of pdf-annotate.
+
+  var event = new Event("annotation:select");
+  document.dispatchEvent(event);
 }
 /**
  * Destroy the edit overlay if it exists.
@@ -223,11 +227,14 @@ function destroyEditOverlay() {
     overlay = null;
   }
 
-  document.removeEventListener('click', handleDocumentClick);
-  document.removeEventListener('keyup', handleDocumentKeyup);
-  document.removeEventListener('mousedown', handleDocumentMousedown);
-  document.removeEventListener('mousemove', handleDocumentMousemove);
-  document.removeEventListener('mouseup', handleDocumentMouseup);
+  document.removeEventListener("click", handleDocumentClick);
+  document.removeEventListener("keyup", handleDocumentKeyup);
+  document.removeEventListener("mousedown", handleDocumentMousedown);
+  document.removeEventListener("mousemove", handleDocumentMousemove);
+  document.removeEventListener("mouseup", handleDocumentMouseup); // Create and dispatch an event that can be listened to outside of pdf-annotate.
+
+  var event = new Event("annotation:deselect");
+  document.dispatchEvent(event);
   (0,_utils__WEBPACK_IMPORTED_MODULE_3__.enableUserSelect)();
 }
 /**
@@ -240,9 +247,9 @@ function deleteAnnotation() {
     return;
   }
 
-  var annotationId = overlay.getAttribute('data-target-id');
+  var annotationId = overlay.getAttribute("data-target-id");
   var nodes = document.querySelectorAll("[data-pdf-annotate-id=\"".concat(annotationId, "\"]"));
-  var svg = overlay.parentNode.querySelector('svg.drawingLayer');
+  var svg = overlay.parentNode.querySelector("svg.drawingLayer");
 
   var _getMetadata = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getMetadata)(svg),
       documentId = _getMetadata.documentId;
@@ -251,7 +258,10 @@ function deleteAnnotation() {
     n.parentNode.removeChild(n);
   });
 
-  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().deleteAnnotation(documentId, annotationId);
+  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().deleteAnnotation(documentId, annotationId); // Create and dispatch an event that can be listened to outside of pdf-annotate.
+
+  var event = new Event("annotation:delete");
+  document.dispatchEvent(event);
   destroyEditOverlay();
 }
 /**
@@ -267,7 +277,7 @@ function handleDocumentClick(e) {
   } // Remove current overlay
 
 
-  var overlay = document.getElementById('pdf-annotate-edit-overlay');
+  var overlay = document.getElementById("pdf-annotate-edit-overlay");
 
   if (overlay) {
     if (isDragging || e.target === overlay) {
@@ -285,7 +295,7 @@ function handleDocumentClick(e) {
 
 
 function handleDocumentKeyup(e) {
-  if (overlay && e.keyCode === 46 && e.target.nodeName.toLowerCase() !== 'textarea' && e.target.nodeName.toLowerCase() !== 'input') {
+  if (overlay && e.keyCode === 46 && e.target.nodeName.toLowerCase() !== "textarea" && e.target.nodeName.toLowerCase() !== "input") {
     deleteAnnotation();
   }
 }
@@ -303,11 +313,11 @@ function handleDocumentMousedown(e) {
   // It doesn't make sense to allow repositioning these types of annotations.
 
 
-  var annotationId = overlay.getAttribute('data-target-id');
+  var annotationId = overlay.getAttribute("data-target-id");
   var target = document.querySelector("[data-pdf-annotate-id=\"".concat(annotationId, "\"]"));
-  var type = target.getAttribute('data-pdf-annotate-type');
+  var type = target.getAttribute("data-pdf-annotate-type");
 
-  if (type === 'highlight' || type === 'strikeout') {
+  if (type === "highlight" || type === "strikeout") {
     return;
   }
 
@@ -316,11 +326,11 @@ function handleDocumentMousedown(e) {
   dragOffsetY = e.clientY;
   dragStartX = overlay.offsetLeft;
   dragStartY = overlay.offsetTop;
-  overlay.style.background = 'rgba(255, 255, 255, 0.7)';
-  overlay.style.cursor = 'move';
-  overlay.querySelector('a').style.display = 'none';
-  document.addEventListener('mousemove', handleDocumentMousemove);
-  document.addEventListener('mouseup', handleDocumentMouseup);
+  overlay.style.background = "rgba(255, 255, 255, 0.7)";
+  overlay.style.cursor = "move";
+  overlay.querySelector("a").style.display = "none";
+  document.addEventListener("mousemove", handleDocumentMousemove);
+  document.addEventListener("mouseup", handleDocumentMouseup);
   (0,_utils__WEBPACK_IMPORTED_MODULE_3__.disableUserSelect)();
 }
 /**
@@ -331,7 +341,7 @@ function handleDocumentMousedown(e) {
 
 
 function handleDocumentMousemove(e) {
-  var annotationId = overlay.getAttribute('data-target-id');
+  var annotationId = overlay.getAttribute("data-target-id");
   var parentNode = overlay.parentNode;
   var rect = parentNode.getBoundingClientRect();
   var y = dragStartY + (e.clientY - dragOffsetY);
@@ -357,15 +367,15 @@ function handleDocumentMousemove(e) {
 
 
 function handleDocumentMouseup(e) {
-  var annotationId = overlay.getAttribute('data-target-id');
+  var annotationId = overlay.getAttribute("data-target-id");
   var target = document.querySelectorAll("[data-pdf-annotate-id=\"".concat(annotationId, "\"]"));
-  var type = target[0].getAttribute('data-pdf-annotate-type');
-  var svg = overlay.parentNode.querySelector('svg.drawingLayer');
+  var type = target[0].getAttribute("data-pdf-annotate-type");
+  var svg = overlay.parentNode.querySelector("svg.drawingLayer");
 
   var _getMetadata2 = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getMetadata)(svg),
       documentId = _getMetadata2.documentId;
 
-  overlay.querySelector('a').style.display = '';
+  overlay.querySelector("a").style.display = "";
 
   function getDelta(propX, propY) {
     return calcDelta(parseInt(target[0].getAttribute(propX), 10), parseInt(target[0].getAttribute(propY), 10));
@@ -383,27 +393,27 @@ function handleDocumentMouseup(e) {
   }
 
   _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().getAnnotation(documentId, annotationId).then(function (annotation) {
-    if (['area', 'highlight', 'point', 'textbox'].indexOf(type) > -1) {
-      var _getDelta = getDelta('x', 'y'),
+    if (["area", "highlight", "point", "textbox"].indexOf(type) > -1) {
+      var _getDelta = getDelta("x", "y"),
           deltaX = _getDelta.deltaX,
           deltaY = _getDelta.deltaY;
 
       _toConsumableArray(target).forEach(function (t, i) {
         if (deltaY !== 0) {
-          var modelY = parseInt(t.getAttribute('y'), 10) + deltaY;
+          var modelY = parseInt(t.getAttribute("y"), 10) + deltaY;
           var viewY = modelY;
 
-          if (type === 'textbox') {
+          if (type === "textbox") {
             viewY += annotation.size;
           }
 
-          if (type === 'point') {
+          if (type === "point") {
             viewY = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.scaleUp)(svg, {
               viewY: viewY
             }).viewY;
           }
 
-          t.setAttribute('y', viewY);
+          t.setAttribute("y", viewY);
 
           if (annotation.rectangles) {
             annotation.rectangles[i].y = modelY;
@@ -413,16 +423,16 @@ function handleDocumentMouseup(e) {
         }
 
         if (deltaX !== 0) {
-          var modelX = parseInt(t.getAttribute('x'), 10) + deltaX;
+          var modelX = parseInt(t.getAttribute("x"), 10) + deltaX;
           var viewX = modelX;
 
-          if (type === 'point') {
+          if (type === "point") {
             viewX = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.scaleUp)(svg, {
               viewX: viewX
             }).viewX;
           }
 
-          t.setAttribute('x', viewX);
+          t.setAttribute("x", viewX);
 
           if (annotation.rectangles) {
             annotation.rectangles[i].x = modelX;
@@ -445,7 +455,7 @@ function handleDocumentMouseup(e) {
       //     }
       //   });
 
-    } else if (type === 'drawing') {
+    } else if (type === "drawing") {
       var rect = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.scaleDown)(svg, (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getAnnotationRect)(target[0]));
 
       var _annotation$lines$ = _slicedToArray(annotation.lines[0], 2),
@@ -477,10 +487,10 @@ function handleDocumentMouseup(e) {
   setTimeout(function () {
     isDragging = false;
   }, 0);
-  overlay.style.background = '';
-  overlay.style.cursor = '';
-  document.removeEventListener('mousemove', handleDocumentMousemove);
-  document.removeEventListener('mouseup', handleDocumentMouseup);
+  overlay.style.background = "";
+  overlay.style.cursor = "";
+  document.removeEventListener("mousemove", handleDocumentMousemove);
+  document.removeEventListener("mouseup", handleDocumentMouseup);
   (0,_utils__WEBPACK_IMPORTED_MODULE_3__.enableUserSelect)();
 }
 /**
@@ -493,10 +503,16 @@ function handleDocumentMouseup(e) {
 function handleAnnotationClick(target) {
   createEditOverlay(target);
 }
+
+function deleteAnnotationFromId(annotationId) {
+  var _getMetadata3 = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getMetadata)(svg),
+      documentId = _getMetadata3.documentId;
+
+  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().deleteAnnotation(documentId, annotationId);
+}
 /**
  * Enable edit mode behavior.
  */
-
 
 function enableEdit() {
   if (_enabled) {
@@ -504,9 +520,8 @@ function enableEdit() {
   }
 
   _enabled = true;
-  (0,_event__WEBPACK_IMPORTED_MODULE_2__.addEventListener)('annotation:click', handleAnnotationClick);
+  (0,_event__WEBPACK_IMPORTED_MODULE_2__.addEventListener)("annotation:click", handleAnnotationClick);
 }
-;
 /**
  * Disable edit mode behavior.
  */
@@ -519,9 +534,8 @@ function disableEdit() {
   }
 
   _enabled = false;
-  (0,_event__WEBPACK_IMPORTED_MODULE_2__.removeEventListener)('annotation:click', handleAnnotationClick);
+  (0,_event__WEBPACK_IMPORTED_MODULE_2__.removeEventListener)("annotation:click", handleAnnotationClick);
 }
-;
 
 /***/ }),
 
@@ -633,11 +647,14 @@ __webpack_require__.r(__webpack_exports__);
   enableEdit: _edit__WEBPACK_IMPORTED_MODULE_1__.enableEdit,
   disablePen: _pen__WEBPACK_IMPORTED_MODULE_2__.disablePen,
   enablePen: _pen__WEBPACK_IMPORTED_MODULE_2__.enablePen,
+  deleteAnnotationFromId: _edit__WEBPACK_IMPORTED_MODULE_1__.deleteAnnotationFromId,
   setPen: _pen__WEBPACK_IMPORTED_MODULE_2__.setPen,
   disablePoint: _point__WEBPACK_IMPORTED_MODULE_3__.disablePoint,
   enablePoint: _point__WEBPACK_IMPORTED_MODULE_3__.enablePoint,
   disableRect: _rect__WEBPACK_IMPORTED_MODULE_4__.disableRect,
   enableRect: _rect__WEBPACK_IMPORTED_MODULE_4__.enableRect,
+  highlightText: _rect__WEBPACK_IMPORTED_MODULE_4__.highlightText,
+  editRect: _rect__WEBPACK_IMPORTED_MODULE_4__.editRect,
   disableText: _text__WEBPACK_IMPORTED_MODULE_5__.disableText,
   enableText: _text__WEBPACK_IMPORTED_MODULE_5__.enableText,
   setText: _text__WEBPACK_IMPORTED_MODULE_5__.setText,
@@ -685,14 +702,14 @@ var PAGE_TEMPLATE = "\n  <div style=\"visibility: hidden;\" class=\"page\" data-
  */
 
 function createPage(pageNumber) {
-  var temp = document.createElement('div');
+  var temp = document.createElement("div");
   temp.innerHTML = PAGE_TEMPLATE;
   var page = temp.children[0];
-  var canvas = page.querySelector('canvas');
-  page.setAttribute('id', "pageContainer".concat(pageNumber));
-  page.setAttribute('data-page-number', pageNumber);
+  var canvas = page.querySelector("canvas");
+  page.setAttribute("id", "pageContainer".concat(pageNumber));
+  page.setAttribute("data-page-number", pageNumber);
   canvas.mozOpaque = true;
-  canvas.setAttribute('id', "page".concat(pageNumber));
+  canvas.setAttribute("id", "page".concat(pageNumber));
   return page;
 }
 /**
@@ -719,9 +736,9 @@ function renderPage(pageNumber, renderOptions) {
         annotations = _ref2[1];
 
     var page = document.getElementById("pageContainer".concat(pageNumber));
-    var svg = page.querySelector('.drawingLayer');
-    var canvas = page.querySelector('.canvasWrapper canvas');
-    var canvasContext = canvas.getContext('2d', {
+    var svg = page.querySelector(".drawingLayer");
+    var canvas = page.querySelector(".canvasWrapper canvas");
+    var canvasContext = canvas.getContext("2d", {
       alpha: false
     });
     var viewport = pdfPage.getViewport({
@@ -748,7 +765,7 @@ function renderPage(pageNumber, renderOptions) {
           var textLayerBuilder = textLayerFactory.createTextLayerBuilder(textLayer, pageNumber - 1, viewport, false, eventBus);
           textLayerBuilder.setTextContent(textContent);
           textLayerBuilder.render();
-          var annotationLayer = page.querySelector('.annotationLayer');
+          var annotationLayer = page.querySelector(".annotationLayer");
           var annotationLayerFactory = new pdfjsViewer.DefaultAnnotationLayerFactory();
           var annotationLayerBuilder = annotationLayerFactory.createAnnotationLayerBuilder(annotationLayer, pdfPage);
           annotationLayerBuilder.render(viewport); // Enable a11y for annotations
@@ -766,7 +783,7 @@ function renderPage(pageNumber, renderOptions) {
       });
     }).then(function () {
       // Indicate that the page was loaded
-      page.setAttribute('data-loaded', 'true');
+      page.setAttribute("data-loaded", "true");
       return [pdfPage, annotations];
     });
   });
@@ -782,22 +799,22 @@ function renderPage(pageNumber, renderOptions) {
 
 function scalePage(pageNumber, viewport, context) {
   var page = document.getElementById("pageContainer".concat(pageNumber));
-  var canvas = page.querySelector('.canvasWrapper canvas');
-  var svg = page.querySelector('.drawingLayer');
-  var wrapper = page.querySelector('.canvasWrapper');
-  var textLayer = page.querySelector('.textLayer');
+  var canvas = page.querySelector(".canvasWrapper canvas");
+  var svg = page.querySelector(".drawingLayer");
+  var wrapper = page.querySelector(".canvasWrapper");
+  var textLayer = page.querySelector(".textLayer");
   var outputScale = getOutputScale(context);
   var transform = !outputScale.scaled ? null : [outputScale.sx, 0, 0, outputScale.sy, 0, 0];
   var sfx = approximateFraction(outputScale.sx);
   var sfy = approximateFraction(outputScale.sy); // Adjust width/height for scale
 
-  page.style.visibility = '';
+  page.style.visibility = "";
   canvas.width = roundToDivide(viewport.width * outputScale.sx, sfx[0]);
   canvas.height = roundToDivide(viewport.height * outputScale.sy, sfy[0]);
-  canvas.style.width = roundToDivide(viewport.width, sfx[1]) + 'px';
-  canvas.style.height = roundToDivide(viewport.height, sfx[1]) + 'px';
-  svg.setAttribute('width', viewport.width);
-  svg.setAttribute('height', viewport.height);
+  canvas.style.width = roundToDivide(viewport.width, sfx[1]) + "px";
+  canvas.style.height = roundToDivide(viewport.height, sfx[1]) + "px";
+  svg.setAttribute("width", viewport.width);
+  svg.setAttribute("height", viewport.height);
   svg.style.width = "".concat(viewport.width, "px");
   svg.style.height = "".concat(viewport.height, "px");
   page.style.width = "".concat(viewport.width, "px");
@@ -876,7 +893,7 @@ function approximateFraction(x) {
 
 function getOutputScale(ctx) {
   var devicePixelRatio = window.devicePixelRatio || 1;
-  var backingStoreRatio = ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1;
+  var backingStoreRatio = ctx.webkitBackingStorePixelRatio || 1;
   var pixelRatio = devicePixelRatio / backingStoreRatio;
   return {
     sx: pixelRatio,
@@ -1220,11 +1237,17 @@ function disablePoint() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "enableRect": () => (/* binding */ enableRect),
-/* harmony export */   "disableRect": () => (/* binding */ disableRect)
+/* harmony export */   "disableRect": () => (/* binding */ disableRect),
+/* harmony export */   "highlightText": () => (/* binding */ highlightText),
+/* harmony export */   "editRect": () => (/* binding */ editRect)
 /* harmony export */ });
 /* harmony import */ var _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../PDFJSAnnotate */ "./src/PDFJSAnnotate.js");
 /* harmony import */ var _render_appendChild__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../render/appendChild */ "./src/render/appendChild.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils */ "./src/UI/utils.js");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -1276,21 +1299,21 @@ function getSelectionRects() {
 function handleDocumentMousedown(e) {
   var svg;
 
-  if (_type !== 'area' || !(svg = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(e.clientX, e.clientY))) {
+  if (_type !== "area" || !(svg = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(e.clientX, e.clientY))) {
     return;
   }
 
   var rect = svg.getBoundingClientRect();
   originY = e.clientY;
   originX = e.clientX;
-  overlay = document.createElement('div');
-  overlay.style.position = 'absolute';
+  overlay = document.createElement("div");
+  overlay.style.position = "absolute";
   overlay.style.top = "".concat(originY - rect.top, "px");
   overlay.style.left = "".concat(originX - rect.left, "px");
   overlay.style.border = "3px solid ".concat(_utils__WEBPACK_IMPORTED_MODULE_2__.BORDER_COLOR);
-  overlay.style.borderRadius = '3px';
+  overlay.style.borderRadius = "3px";
   svg.parentNode.appendChild(overlay);
-  document.addEventListener('mousemove', handleDocumentMousemove);
+  document.addEventListener("mousemove", handleDocumentMousemove);
   (0,_utils__WEBPACK_IMPORTED_MODULE_2__.disableUserSelect)();
 }
 /**
@@ -1301,7 +1324,7 @@ function handleDocumentMousedown(e) {
 
 
 function handleDocumentMousemove(e) {
-  var svg = overlay.parentNode.querySelector('svg.drawingLayer');
+  var svg = overlay.parentNode.querySelector("svg.drawingLayer");
   var rect = svg.getBoundingClientRect();
 
   if (originX + (e.clientX - originX) < rect.right) {
@@ -1321,10 +1344,11 @@ function handleDocumentMousemove(e) {
 
 function handleDocumentMouseup(e) {
   var rects;
+  var annotation;
 
-  if (_type !== 'area' && (rects = getSelectionRects())) {
+  if (_type !== "area" && (rects = getSelectionRects())) {
     var svg = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(rects[0].left, rects[0].top);
-    saveRect(_type, _toConsumableArray(rects).map(function (r) {
+    annotation = saveRect(_type, _toConsumableArray(rects).map(function (r) {
       return {
         top: r.top,
         left: r.left,
@@ -1332,12 +1356,12 @@ function handleDocumentMouseup(e) {
         height: r.height
       };
     }));
-  } else if (_type === 'area' && overlay) {
-    var _svg = overlay.parentNode.querySelector('svg.drawingLayer');
+  } else if (_type === "area" && overlay) {
+    var _svg = overlay.parentNode.querySelector("svg.drawingLayer");
 
     var rect = _svg.getBoundingClientRect();
 
-    saveRect(_type, [{
+    annotation = saveRect(_type, [{
       top: parseInt(overlay.style.top, 10) + rect.top,
       left: parseInt(overlay.style.left, 10) + rect.left,
       width: parseInt(overlay.style.width, 10),
@@ -1345,9 +1369,11 @@ function handleDocumentMouseup(e) {
     }]);
     overlay.parentNode.removeChild(overlay);
     overlay = null;
-    document.removeEventListener('mousemove', handleDocumentMousemove);
+    document.removeEventListener("mousemove", handleDocumentMousemove);
     (0,_utils__WEBPACK_IMPORTED_MODULE_2__.enableUserSelect)();
   }
+
+  return annotation;
 }
 /**
  * Handle document.keyup event
@@ -1365,7 +1391,7 @@ function handleDocumentKeyup(e) {
     if (overlay && overlay.parentNode) {
       overlay.parentNode.removeChild(overlay);
       overlay = null;
-      document.removeEventListener('mousemove', handleDocumentMousemove);
+      document.removeEventListener("mousemove", handleDocumentMousemove);
     }
   }
 }
@@ -1390,10 +1416,10 @@ function saveRect(type, rects, color) {
   var boundingRect = svg.getBoundingClientRect();
 
   if (!color) {
-    if (type === 'highlight') {
-      color = 'FFFF00';
-    } else if (type === 'strikeout') {
-      color = 'FF0000';
+    if (type === "highlight") {
+      color = "FFFF00";
+    } else if (type === "strikeout") {
+      color = "FF0000";
     }
   } // Initialize the annotation
 
@@ -1404,7 +1430,7 @@ function saveRect(type, rects, color) {
     rectangles: _toConsumableArray(rects).map(function (r) {
       var offset = 0;
 
-      if (type === 'strikeout') {
+      if (type === "strikeout") {
         offset = r.height / 2;
       }
 
@@ -1424,7 +1450,7 @@ function saveRect(type, rects, color) {
   } // Special treatment for area as it only supports a single rect
 
 
-  if (type === 'area') {
+  if (type === "area") {
     var rect = annotation.rectangles[0];
     delete annotation.rectangles;
     annotation.x = rect.x;
@@ -1438,9 +1464,11 @@ function saveRect(type, rects, color) {
       pageNumber = _getMetadata.pageNumber; // Add the annotation
 
 
-  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().addAnnotation(documentId, pageNumber, annotation).then(function (annotation) {
-    (0,_render_appendChild__WEBPACK_IMPORTED_MODULE_1__["default"])(svg, annotation);
+  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().addAnnotation(documentId, pageNumber, annotation).then(function (newAnnotation) {
+    annotation = newAnnotation;
+    (0,_render_appendChild__WEBPACK_IMPORTED_MODULE_1__["default"])(svg, newAnnotation);
   });
+  return annotation;
 }
 /**
  * Enable rect behavior
@@ -1455,9 +1483,9 @@ function enableRect(type) {
   }
 
   _enabled = true;
-  document.addEventListener('mouseup', handleDocumentMouseup);
-  document.addEventListener('mousedown', handleDocumentMousedown);
-  document.addEventListener('keyup', handleDocumentKeyup);
+  document.addEventListener("mouseup", handleDocumentMouseup);
+  document.addEventListener("mousedown", handleDocumentMousedown);
+  document.addEventListener("keyup", handleDocumentKeyup);
 }
 /**
  * Disable rect behavior
@@ -1469,9 +1497,58 @@ function disableRect() {
   }
 
   _enabled = false;
-  document.removeEventListener('mouseup', handleDocumentMouseup);
-  document.removeEventListener('mousedown', handleDocumentMousedown);
-  document.removeEventListener('keyup', handleDocumentKeyup);
+  document.removeEventListener("mouseup", handleDocumentMouseup);
+  document.removeEventListener("mousedown", handleDocumentMousedown);
+  document.removeEventListener("keyup", handleDocumentKeyup);
+}
+/**
+ * Highlight the selected text.
+ * @param {string} type The type of selection.
+ * @param {Event} event The event.
+ */
+
+function highlightText(type, event) {
+  // Set the tool as enabled and set the type.
+  _enabled = true;
+  _type = type; // Perform the select.
+
+  var annotation = handleDocumentMouseup(event); // Clear the selected text.
+
+  var selection = window.getSelection();
+  selection.removeAllRanges();
+  _enabled = false;
+  return annotation;
+}
+function editRect(_x, _x2, _x3) {
+  return _editRect.apply(this, arguments);
+}
+
+function _editRect() {
+  _editRect = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(type, annotationId, attributes) {
+    var annotation;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.next = 2;
+            return _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().getAnnotation("", annotationId);
+
+          case 2:
+            annotation = _context.sent;
+            annotation.color = attributes.color || annotation.color;
+            annotation.stroke = "#".concat(attributes.stroke);
+            annotation.opacity = attributes.opacity || annotation.opacity;
+            annotation.strokeWidth = attributes.strokeWidth || annotation.strokeWidth;
+            _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().editAnnotation("", annotationId, annotation);
+
+          case 8:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+  return _editRect.apply(this, arguments);
 }
 
 /***/ }),
@@ -1496,7 +1573,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var _enabled = false;
-var input;
+var textArea;
 
 var _textSize;
 
@@ -1509,23 +1586,24 @@ var _textColor;
 
 
 function handleDocumentMouseup(e) {
-  if (input || !(0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(e.clientX, e.clientY)) {
+  if (textArea || !(0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(e.clientX, e.clientY)) {
     return;
   }
 
-  input = document.createElement("input");
-  input.setAttribute("id", "pdf-annotate-text-input");
-  input.setAttribute("placeholder", "Enter text");
-  input.style.border = "3px solid ".concat(_utils__WEBPACK_IMPORTED_MODULE_2__.BORDER_COLOR);
-  input.style.borderRadius = "3px";
-  input.style.position = "fixed";
-  input.style.top = "".concat(e.clientY, "px");
-  input.style.left = "".concat(e.clientX, "px");
-  input.style.fontSize = "".concat(_textSize, "px");
-  input.addEventListener("blur", handleInputBlur);
-  input.addEventListener("keyup", handleInputKeyup);
-  document.getElementById("content-wrapper").appendChild(input);
-  input.focus();
+  textArea = document.createElement("textarea");
+  textArea.setAttribute("id", "pdf-annotate-text-input");
+  textArea.style.border = "3px solid ".concat(_utils__WEBPACK_IMPORTED_MODULE_2__.BORDER_COLOR);
+  textArea.style.borderRadius = "3px";
+  textArea.style.position = "fixed";
+  textArea.style.top = "".concat(e.clientY, "px");
+  textArea.style.left = "".concat(e.clientX, "px");
+  textArea.style.fontSize = "".concat(_textSize, "px");
+  textArea.style.background = "transparent";
+  textArea.style.whiteSpace = "pre-line";
+  textArea.addEventListener("blur", handleInputBlur);
+  textArea.addEventListener("keyup", handleInputKeyup);
+  document.getElementById("content-wrapper").appendChild(textArea);
+  textArea.focus();
 }
 /**
  * Handle input.blur event
@@ -1545,8 +1623,6 @@ function handleInputBlur() {
 function handleInputKeyup(e) {
   if (e.keyCode === 27) {
     closeInput();
-  } else if (e.keyCode === 13) {
-    saveText();
   }
 }
 /**
@@ -1555,9 +1631,9 @@ function handleInputKeyup(e) {
 
 
 function saveText() {
-  if (input.value.trim().length > 0) {
-    var clientX = parseInt(input.style.left, 10);
-    var clientY = parseInt(input.style.top, 10);
+  if (textArea.value.trim().length > 0) {
+    var clientX = parseInt(textArea.style.left, 10);
+    var clientY = parseInt(textArea.style.top, 10);
     var svg = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(clientX, clientY);
 
     if (!svg) {
@@ -1573,12 +1649,12 @@ function saveText() {
       type: "textbox",
       size: _textSize,
       color: _textColor,
-      content: input.value.trim()
+      content: textArea.value.trim()
     }, (0,_utils__WEBPACK_IMPORTED_MODULE_2__.scaleDown)(svg, {
       x: clientX - rect.left,
       y: clientY - rect.top,
-      width: input.offsetWidth,
-      height: input.offsetHeight
+      width: textArea.offsetWidth,
+      height: textArea.offsetHeight
     }));
     _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().addAnnotation(documentId, pageNumber, annotation).then(function (annotation) {
       (0,_render_appendChild__WEBPACK_IMPORTED_MODULE_1__["default"])(svg, annotation);
@@ -1593,11 +1669,12 @@ function saveText() {
 
 
 function closeInput() {
-  if (input) {
-    input.removeEventListener("blur", handleInputBlur);
-    input.removeEventListener("keyup", handleInputKeyup);
-    document.getElementById("content-wrapper").removeChild(input);
-    input = null;
+  if (textArea) {
+    textArea.removeEventListener("blur", handleInputBlur);
+    textArea.removeEventListener("keyup", handleInputKeyup);
+    document.getElementById("content-wrapper").removeChild(textArea);
+    textArea = null;
+    disableText();
   }
 }
 /**
@@ -3292,13 +3369,15 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function renderLine(a) {
-  var group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
   (0,_utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__["default"])(group, {
-    stroke: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || '#f00'),
-    strokeWidth: 1
+    stroke: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || "#f00"),
+    strokeWidth: a.strokeWidth || 1,
+    opacity: a.opacity || 1,
+    color: a.color
   });
   a.rectangles.forEach(function (r) {
-    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     (0,_utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__["default"])(line, {
       x1: r.x,
       y1: r.y,
@@ -3444,10 +3523,10 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function renderRect(a) {
-  if (a.type === 'highlight') {
-    var group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  if (a.type === "highlight") {
+    var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
     (0,_utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__["default"])(group, {
-      fill: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || '#ff0'),
+      fill: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || "#ff0"),
       fillOpacity: 0.2
     });
     a.rectangles.forEach(function (r) {
@@ -3457,15 +3536,15 @@ function renderRect(a) {
   } else {
     var rect = createRect(a);
     (0,_utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__["default"])(rect, {
-      stroke: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || '#f00'),
-      fill: 'none'
+      stroke: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || "#f00"),
+      fill: "none"
     });
     return rect;
   }
 }
 
 function createRect(r) {
-  var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   (0,_utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__["default"])(rect, {
     x: r.x,
     y: r.y,
@@ -3501,15 +3580,32 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function renderText(a) {
-  var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
   (0,_utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__["default"])(text, {
     x: a.x,
     y: a.y + parseInt(a.size, 10),
-    fill: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || '#000'),
+    fill: (0,_utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__["default"])(a.color || "#000"),
     fontSize: a.size
   });
-  text.innerHTML = a.content;
+  text.innerHTML = processTextContent(a);
   return text;
+}
+
+function processTextContent(comment) {
+  var lines = comment.content.split("\n");
+  var tspans = [];
+
+  for (var index = 0; index < lines.length; index++) {
+    var line = lines[index];
+
+    if (line == " " || line == "") {
+      tspans.push("<tspan visibility=\"hidden\" dy=\"1em\">.</tspan>");
+    } else {
+      tspans.push("<tspan x=\"inherit\" dy=\"1em\">".concat(line, "</tspan>"));
+    }
+  }
+
+  return tspans.join("");
 }
 
 /***/ }),
