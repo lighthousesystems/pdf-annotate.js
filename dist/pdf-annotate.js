@@ -436,7 +436,6 @@ function handleDocumentMouseup(e) {
             annotation.x = modelX;
 
             if (type === "textbox") {
-              console.log(t);
               Array.from(t.children).forEach(function (child) {
                 return child.setAttribute("x", modelX);
               });
@@ -506,6 +505,11 @@ function handleDocumentMouseup(e) {
 function handleAnnotationClick(target) {
   createEditOverlay(target);
 }
+/**
+ * Delete an annotation via its Id.
+ * @param {Number} annotationId The annotation Id to delete.
+ */
+
 
 function deleteAnnotationFromId(annotationId) {
   var nodes = document.querySelectorAll("[data-pdf-annotate-id=\"".concat(annotationId, "\"]"));
@@ -1746,6 +1750,11 @@ function disableText() {
 function openTextInput(_x) {
   return _openTextInput.apply(this, arguments);
 }
+/**
+ * Edit the text for a text annotation.
+ * @param {Number} annotationId The annotation id.
+ * @param {String} newText The new text to set
+ */
 
 function _openTextInput() {
   _openTextInput = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(e) {
@@ -3674,6 +3683,12 @@ function renderText(a) {
   text.innerHTML = processTextContent(a);
   return text;
 }
+/**
+ * Process the content of the annotation to convert to html.
+ * @param {*} comment The comment annotation.
+ * @returns The processes annotation.
+ */
+
 function processTextContent(comment) {
   var lines = comment.content.split("\n");
   var tspans = []; // If we only have 1 line, we don't need to split anything up into smaller tspans.

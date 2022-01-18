@@ -23,6 +23,11 @@ export default function renderText(a) {
   return text;
 }
 
+/**
+ * Process the content of the annotation to convert to html.
+ * @param {*} comment The comment annotation.
+ * @returns The processes annotation.
+ */
 export function processTextContent(comment) {
   let lines = comment.content.split("\n");
   let tspans = [];

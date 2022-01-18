@@ -309,7 +309,6 @@ function handleDocumentMouseup(e) {
             } else if (annotation.x) {
               annotation.x = modelX;
               if (type === "textbox") {
-                console.log(t);
                 Array.from(t.children).forEach((child) =>
                   child.setAttribute("x", modelX)
                 );
@@ -379,6 +378,10 @@ function handleAnnotationClick(target) {
   createEditOverlay(target);
 }
 
+/**
+ * Delete an annotation via its Id.
+ * @param {Number} annotationId The annotation Id to delete.
+ */
 export function deleteAnnotationFromId(annotationId) {
   let nodes = document.querySelectorAll(
     `[data-pdf-annotate-id="${annotationId}"]`

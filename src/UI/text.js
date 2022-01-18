@@ -154,6 +154,11 @@ export async function openTextInput(e) {
   handleDocumentMouseup(e);
 }
 
+/**
+ * Edit the text for a text annotation.
+ * @param {Number} annotationId The annotation id.
+ * @param {String} newText The new text to set
+ */
 export async function editText(annotationId, newText) {
   let svg = document.querySelector("svg.drawingLayer");
 
