@@ -284,10 +284,6 @@ function handleDocumentMouseup(e) {
             let modelY = parseInt(t.getAttribute("y"), 10) + deltaY;
             let viewY = modelY;
 
-            if (type === "textbox") {
-              viewY += annotation.size;
-            }
-
             if (type === "point") {
               viewY = scaleUp(svg, { viewY }).viewY;
             }
@@ -312,6 +308,12 @@ function handleDocumentMouseup(e) {
               annotation.rectangles[i].x = modelX;
             } else if (annotation.x) {
               annotation.x = modelX;
+              if (type === "textbox") {
+                console.log(t);
+                Array.from(t.children).forEach((child) =>
+                  child.setAttribute("x", modelX)
+                );
+              }
             }
           }
         });
@@ -378,7 +380,17 @@ function handleAnnotationClick(target) {
 }
 
 export function deleteAnnotationFromId(annotationId) {
+  let nodes = document.querySelectorAll(
+    `[data-pdf-annotate-id="${annotationId}"]`
+  );
+
+  let svg = document.querySelector("svg.drawingLayer");
   let { documentId } = getMetadata(svg);
+
+  [...nodes].forEach((n) => {
+    n.parentNode.removeChild(n);
+  });
+
   PDFJSAnnotate.getStoreAdapter().deleteAnnotation(documentId, annotationId);
 }
 

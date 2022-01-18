@@ -3,7 +3,13 @@ import { disableEdit, enableEdit, deleteAnnotationFromId } from "./edit";
 import { disablePen, enablePen, setPen } from "./pen";
 import { disablePoint, enablePoint } from "./point";
 import { disableRect, enableRect, highlightText, editRect } from "./rect";
-import { disableText, enableText, setText } from "./text";
+import {
+  disableText,
+  enableText,
+  setText,
+  openTextInput,
+  editText,
+} from "./text";
 import { createPage, renderPage } from "./page";
 
 export default {
@@ -25,6 +31,8 @@ export default {
   disableText,
   enableText,
   setText,
+  openTextInput,
+  editText,
   createPage,
   renderPage,
 };

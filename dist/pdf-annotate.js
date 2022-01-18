@@ -403,10 +403,6 @@ function handleDocumentMouseup(e) {
           var modelY = parseInt(t.getAttribute("y"), 10) + deltaY;
           var viewY = modelY;
 
-          if (type === "textbox") {
-            viewY += annotation.size;
-          }
-
           if (type === "point") {
             viewY = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.scaleUp)(svg, {
               viewY: viewY
@@ -438,6 +434,13 @@ function handleDocumentMouseup(e) {
             annotation.rectangles[i].x = modelX;
           } else if (annotation.x) {
             annotation.x = modelX;
+
+            if (type === "textbox") {
+              console.log(t);
+              Array.from(t.children).forEach(function (child) {
+                return child.setAttribute("x", modelX);
+              });
+            }
           }
         }
       }); // } else if (type === 'strikeout') {
@@ -505,8 +508,15 @@ function handleAnnotationClick(target) {
 }
 
 function deleteAnnotationFromId(annotationId) {
+  var nodes = document.querySelectorAll("[data-pdf-annotate-id=\"".concat(annotationId, "\"]"));
+  var svg = document.querySelector("svg.drawingLayer");
+
   var _getMetadata3 = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getMetadata)(svg),
       documentId = _getMetadata3.documentId;
+
+  _toConsumableArray(nodes).forEach(function (n) {
+    n.parentNode.removeChild(n);
+  });
 
   _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().deleteAnnotation(documentId, annotationId);
 }
@@ -658,6 +668,8 @@ __webpack_require__.r(__webpack_exports__);
   disableText: _text__WEBPACK_IMPORTED_MODULE_5__.disableText,
   enableText: _text__WEBPACK_IMPORTED_MODULE_5__.enableText,
   setText: _text__WEBPACK_IMPORTED_MODULE_5__.setText,
+  openTextInput: _text__WEBPACK_IMPORTED_MODULE_5__.openTextInput,
+  editText: _text__WEBPACK_IMPORTED_MODULE_5__.editText,
   createPage: _page__WEBPACK_IMPORTED_MODULE_6__.createPage,
   renderPage: _page__WEBPACK_IMPORTED_MODULE_6__.renderPage
 });
@@ -1564,11 +1576,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "setText": () => (/* binding */ setText),
 /* harmony export */   "enableText": () => (/* binding */ enableText),
-/* harmony export */   "disableText": () => (/* binding */ disableText)
+/* harmony export */   "disableText": () => (/* binding */ disableText),
+/* harmony export */   "openTextInput": () => (/* binding */ openTextInput),
+/* harmony export */   "editText": () => (/* binding */ editText)
 /* harmony export */ });
 /* harmony import */ var _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../PDFJSAnnotate */ "./src/PDFJSAnnotate.js");
 /* harmony import */ var _render_appendChild__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../render/appendChild */ "./src/render/appendChild.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils */ "./src/UI/utils.js");
+/* harmony import */ var _render_renderText__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../render/renderText */ "./src/render/renderText.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils */ "./src/UI/utils.js");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
 
 
 
@@ -1586,13 +1606,13 @@ var _textColor;
 
 
 function handleDocumentMouseup(e) {
-  if (textArea || !(0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(e.clientX, e.clientY)) {
+  if (textArea || !(0,_utils__WEBPACK_IMPORTED_MODULE_3__.findSVGAtPoint)(e.clientX, e.clientY)) {
     return;
   }
 
   textArea = document.createElement("textarea");
   textArea.setAttribute("id", "pdf-annotate-text-input");
-  textArea.style.border = "3px solid ".concat(_utils__WEBPACK_IMPORTED_MODULE_2__.BORDER_COLOR);
+  textArea.style.border = "3px solid ".concat(_utils__WEBPACK_IMPORTED_MODULE_3__.BORDER_COLOR);
   textArea.style.borderRadius = "3px";
   textArea.style.position = "fixed";
   textArea.style.top = "".concat(e.clientY, "px");
@@ -1634,13 +1654,13 @@ function saveText() {
   if (textArea.value.trim().length > 0) {
     var clientX = parseInt(textArea.style.left, 10);
     var clientY = parseInt(textArea.style.top, 10);
-    var svg = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.findSVGAtPoint)(clientX, clientY);
+    var svg = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.findSVGAtPoint)(clientX, clientY);
 
     if (!svg) {
       return;
     }
 
-    var _getMetadata = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.getMetadata)(svg),
+    var _getMetadata = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getMetadata)(svg),
         documentId = _getMetadata.documentId,
         pageNumber = _getMetadata.pageNumber;
 
@@ -1650,14 +1670,22 @@ function saveText() {
       size: _textSize,
       color: _textColor,
       content: textArea.value.trim()
-    }, (0,_utils__WEBPACK_IMPORTED_MODULE_2__.scaleDown)(svg, {
+    }, (0,_utils__WEBPACK_IMPORTED_MODULE_3__.scaleDown)(svg, {
       x: clientX - rect.left,
       y: clientY - rect.top,
       width: textArea.offsetWidth,
       height: textArea.offsetHeight
     }));
     _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().addAnnotation(documentId, pageNumber, annotation).then(function (annotation) {
-      (0,_render_appendChild__WEBPACK_IMPORTED_MODULE_1__["default"])(svg, annotation);
+      (0,_render_appendChild__WEBPACK_IMPORTED_MODULE_1__["default"])(svg, annotation); // Create and dispatch an event that can be listened to outside of pdf-annotate.
+
+      var event = new CustomEvent("text:saved", {
+        detail: {
+          uuid: annotation.uuid,
+          content: annotation.content
+        }
+      });
+      document.dispatchEvent(event);
     });
   }
 
@@ -1715,6 +1743,61 @@ function disableText() {
   _enabled = false;
   document.removeEventListener("mouseup", handleDocumentMouseup);
 }
+function openTextInput(_x) {
+  return _openTextInput.apply(this, arguments);
+}
+
+function _openTextInput() {
+  _openTextInput = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(e) {
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            handleDocumentMouseup(e);
+
+          case 1:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+  return _openTextInput.apply(this, arguments);
+}
+
+function editText(_x2, _x3) {
+  return _editText.apply(this, arguments);
+}
+
+function _editText() {
+  _editText = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(annotationId, newText) {
+    var svg, nodes, _getMetadata2, documentId, annotation;
+
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            svg = document.querySelector("svg.drawingLayer");
+            nodes = document.querySelector("[data-pdf-annotate-id=\"".concat(annotationId, "\"]"));
+            _getMetadata2 = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getMetadata)(svg), documentId = _getMetadata2.documentId;
+            _context2.next = 5;
+            return _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().getAnnotation(documentId, annotationId);
+
+          case 5:
+            annotation = _context2.sent;
+            annotation.content = newText;
+            nodes.innerHTML = (0,_render_renderText__WEBPACK_IMPORTED_MODULE_2__.processTextContent)(annotation);
+            _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().editAnnotation(documentId, annotationId, annotation);
+
+          case 9:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+  return _editText.apply(this, arguments);
+}
 
 /***/ }),
 
@@ -1745,16 +1828,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var create_stylesheet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! create-stylesheet */ "./node_modules/create-stylesheet/index.js");
 /* harmony import */ var create_stylesheet__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(create_stylesheet__WEBPACK_IMPORTED_MODULE_0__);
 
-var BORDER_COLOR = '#00BFFF';
+var BORDER_COLOR = "#00BFFF";
 var userSelectStyleSheet = create_stylesheet__WEBPACK_IMPORTED_MODULE_0___default()({
   body: {
-    '-webkit-user-select': 'none',
-    '-moz-user-select': 'none',
-    '-ms-user-select': 'none',
-    'user-select': 'none'
+    "-webkit-user-select": "none",
+    "-moz-user-select": "none",
+    "-ms-user-select": "none",
+    "user-select": "none"
   }
 });
-userSelectStyleSheet.setAttribute('data-pdf-annotate-user-select', 'true');
+userSelectStyleSheet.setAttribute("data-pdf-annotate-user-select", "true");
 /**
  * Find the SVGElement that contains all the annotations for a page
  *
@@ -1766,7 +1849,7 @@ function findSVGContainer(node) {
   var parentNode = node;
 
   while ((parentNode = parentNode.parentNode) && parentNode !== document) {
-    if (parentNode.nodeName.toUpperCase() === 'SVG' && parentNode.getAttribute('data-pdf-annotate-container') === 'true') {
+    if (parentNode.nodeName.toUpperCase() === "SVG" && parentNode.getAttribute("data-pdf-annotate-container") === "true") {
       return parentNode;
     }
   }
@@ -1810,7 +1893,7 @@ function findAnnotationAtPoint(x, y) {
     return;
   }
 
-  var elements = svg.querySelectorAll('[data-pdf-annotate-type]'); // Find a target element within SVG
+  var elements = svg.querySelectorAll("[data-pdf-annotate-type]"); // Find a target element within SVG
 
   for (var i = 0, l = elements.length; i < l; i++) {
     var el = elements[i];
@@ -1872,26 +1955,26 @@ function getAnnotationRect(el) {
   var LINE_OFFSET = 16;
 
   switch (el.nodeName.toLowerCase()) {
-    case 'path':
+    case "path":
       var minX, maxX, minY, maxY;
-      el.getAttribute('d').replace(/Z/, '').split('M').splice(1).forEach(function (p) {
-        var s = p.split(' ').map(function (i) {
+      el.getAttribute("d").replace(/Z/, "").split("M").splice(1).forEach(function (p) {
+        var s = p.split(" ").map(function (i) {
           return parseInt(i, 10);
         });
 
-        if (typeof minX === 'undefined' || s[0] < minX) {
+        if (typeof minX === "undefined" || s[0] < minX) {
           minX = s[0];
         }
 
-        if (typeof maxX === 'undefined' || s[2] > maxX) {
+        if (typeof maxX === "undefined" || s[2] > maxX) {
           maxX = s[2];
         }
 
-        if (typeof minY === 'undefined' || s[1] < minY) {
+        if (typeof minY === "undefined" || s[1] < minY) {
           minY = s[1];
         }
 
-        if (typeof maxY === 'undefined' || s[3] > maxY) {
+        if (typeof maxY === "undefined" || s[3] > maxY) {
           maxY = s[3];
         }
       });
@@ -1901,11 +1984,11 @@ function getAnnotationRect(el) {
       y = minY;
       break;
 
-    case 'line':
-      h = parseInt(el.getAttribute('y2'), 10) - parseInt(el.getAttribute('y1'), 10);
-      w = parseInt(el.getAttribute('x2'), 10) - parseInt(el.getAttribute('x1'), 10);
-      x = parseInt(el.getAttribute('x1'), 10);
-      y = parseInt(el.getAttribute('y1'), 10);
+    case "line":
+      h = parseInt(el.getAttribute("y2"), 10) - parseInt(el.getAttribute("y1"), 10);
+      w = parseInt(el.getAttribute("x2"), 10) - parseInt(el.getAttribute("x1"), 10);
+      x = parseInt(el.getAttribute("x1"), 10);
+      y = parseInt(el.getAttribute("y1"), 10);
 
       if (h === 0) {
         h += LINE_OFFSET;
@@ -1914,14 +1997,14 @@ function getAnnotationRect(el) {
 
       break;
 
-    case 'text':
+    case "text":
       h = rect.height;
       w = rect.width;
-      x = parseInt(el.getAttribute('x'), 10);
-      y = parseInt(el.getAttribute('y'), 10) - h;
+      x = parseInt(el.getAttribute("x"), 10);
+      y = parseInt(el.getAttribute("y"), 10);
       break;
 
-    case 'g':
+    case "g":
       var _getOffset2 = getOffset(el),
           offsetLeft = _getOffset2.offsetLeft,
           offsetTop = _getOffset2.offsetTop;
@@ -1931,19 +2014,19 @@ function getAnnotationRect(el) {
       x = rect.left - offsetLeft;
       y = rect.top - offsetTop;
 
-      if (el.getAttribute('data-pdf-annotate-type') === 'strikeout') {
+      if (el.getAttribute("data-pdf-annotate-type") === "strikeout") {
         h += LINE_OFFSET;
         y -= LINE_OFFSET / 2;
       }
 
       break;
 
-    case 'rect':
-    case 'svg':
-      h = parseInt(el.getAttribute('height'), 10);
-      w = parseInt(el.getAttribute('width'), 10);
-      x = parseInt(el.getAttribute('x'), 10);
-      y = parseInt(el.getAttribute('y'), 10);
+    case "rect":
+    case "svg":
+      h = parseInt(el.getAttribute("height"), 10);
+      w = parseInt(el.getAttribute("width"), 10);
+      x = parseInt(el.getAttribute("x"), 10);
+      y = parseInt(el.getAttribute("y"), 10);
       break;
   } // Result provides same properties as getBoundingClientRect
 
@@ -1960,7 +2043,7 @@ function getAnnotationRect(el) {
   // I assume that the scale is already being handled
   // natively by virtue of the `transform` attribute.
 
-  if (!['svg', 'g'].includes(el.nodeName.toLowerCase())) {
+  if (!["svg", "g"].includes(el.nodeName.toLowerCase())) {
     result = scaleUp(findSVGAtPoint(rect.left, rect.top), result);
   }
 
@@ -2037,7 +2120,7 @@ function getOffset(el) {
   var parentNode = el;
 
   while ((parentNode = parentNode.parentNode) && parentNode !== document) {
-    if (parentNode.nodeName.toUpperCase() === 'SVG') {
+    if (parentNode.nodeName.toUpperCase() === "SVG") {
       break;
     }
   }
@@ -2074,9 +2157,9 @@ function enableUserSelect() {
 
 function getMetadata(svg) {
   return {
-    documentId: svg.getAttribute('data-pdf-annotate-document'),
-    pageNumber: parseInt(svg.getAttribute('data-pdf-annotate-page'), 10),
-    viewport: JSON.parse(svg.getAttribute('data-pdf-annotate-viewport'))
+    documentId: svg.getAttribute("data-pdf-annotate-document"),
+    pageNumber: parseInt(svg.getAttribute("data-pdf-annotate-page"), 10),
+    viewport: JSON.parse(svg.getAttribute("data-pdf-annotate-viewport"))
   };
 }
 
@@ -3565,7 +3648,8 @@ function createRect(r) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ renderText)
+/* harmony export */   "default": () => (/* binding */ renderText),
+/* harmony export */   "processTextContent": () => (/* binding */ processTextContent)
 /* harmony export */ });
 /* harmony import */ var _utils_setAttributes__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/setAttributes */ "./src/utils/setAttributes.js");
 /* harmony import */ var _utils_normalizeColor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/normalizeColor */ "./src/utils/normalizeColor.js");
@@ -3590,18 +3674,21 @@ function renderText(a) {
   text.innerHTML = processTextContent(a);
   return text;
 }
-
 function processTextContent(comment) {
   var lines = comment.content.split("\n");
-  var tspans = [];
+  var tspans = []; // If we only have 1 line, we don't need to split anything up into smaller tspans.
+
+  if (lines.length === 1) {
+    return comment.content;
+  }
 
   for (var index = 0; index < lines.length; index++) {
     var line = lines[index];
 
     if (line == " " || line == "") {
-      tspans.push("<tspan visibility=\"hidden\" dy=\"1em\">.</tspan>");
+      tspans.push("<tspan x=\"".concat(comment.x, "\" visibility=\"hidden\" dy=\"1em\">.</tspan>"));
     } else {
-      tspans.push("<tspan x=\"inherit\" dy=\"1em\">".concat(line, "</tspan>"));
+      tspans.push("<tspan x=\"".concat(comment.x, "\" dy=\"1em\">").concat(line, "</tspan>"));
     }
   }
 
