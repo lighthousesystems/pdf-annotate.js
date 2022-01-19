@@ -23,16 +23,27 @@ export default function renderText(a) {
   return text;
 }
 
-function processTextContent(comment) {
+/**
+ * Process the content of the annotation to convert to html.
+ * @param {*} comment The comment annotation.
+ * @returns The processes annotation.
+ */
+export function processTextContent(comment) {
   let lines = comment.content.split("\n");
   let tspans = [];
 
+  // If we only have 1 line, we don't need to split anything up into smaller tspans.
+  if (lines.length === 1) {
+    return comment.content;
+  }
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index];
     if (line == " " || line == "") {
-      tspans.push(`<tspan visibility="hidden" dy="1em">.</tspan>`);
+      tspans.push(
+        `<tspan x="${comment.x}" visibility="hidden" dy="1em">.</tspan>`
+      );
     } else {
-      tspans.push(`<tspan x="inherit" dy="1em">${line}</tspan>`);
+      tspans.push(`<tspan x="${comment.x}" dy="1em">${line}</tspan>`);
     }
   }
 

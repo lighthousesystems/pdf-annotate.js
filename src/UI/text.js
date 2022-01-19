@@ -1,5 +1,6 @@
 import PDFJSAnnotate from "../PDFJSAnnotate";
 import appendChild from "../render/appendChild";
+import { processTextContent } from "../render/renderText";
 import { BORDER_COLOR, findSVGAtPoint, getMetadata, scaleDown } from "./utils";
 
 let _enabled = false;
@@ -86,6 +87,14 @@ function saveText() {
       .addAnnotation(documentId, pageNumber, annotation)
       .then((annotation) => {
         appendChild(svg, annotation);
+        // Create and dispatch an event that can be listened to outside of pdf-annotate.
+        let event = new CustomEvent("text:saved", {
+          detail: {
+            uuid: annotation.uuid,
+            content: annotation.content,
+          },
+        });
+        document.dispatchEvent(event);
       });
   }
 
@@ -139,4 +148,38 @@ export function disableText() {
 
   _enabled = false;
   document.removeEventListener("mouseup", handleDocumentMouseup);
+}
+
+export async function openTextInput(e) {
+  handleDocumentMouseup(e);
+}
+
+/**
+ * Edit the text for a text annotation.
+ * @param {Number} annotationId The annotation id.
+ * @param {String} newText The new text to set
+ */
+export async function editText(annotationId, newText) {
+  let svg = document.querySelector("svg.drawingLayer");
+
+  let nodes = document.querySelector(
+    `[data-pdf-annotate-id="${annotationId}"]`
+  );
+
+  let { documentId } = getMetadata(svg);
+
+  let annotation = await PDFJSAnnotate.getStoreAdapter().getAnnotation(
+    documentId,
+    annotationId
+  );
+
+  annotation.content = newText;
+
+  nodes.innerHTML = processTextContent(annotation);
+
+  PDFJSAnnotate.getStoreAdapter().editAnnotation(
+    documentId,
+    annotationId,
+    annotation
+  );
 }
