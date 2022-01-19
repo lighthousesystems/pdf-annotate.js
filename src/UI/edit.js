@@ -398,6 +398,25 @@ export function deleteAnnotationFromId(annotationId) {
 }
 
 /**
+ * Function to clear all annotations.
+ */
+export function clearAll() {
+  let svg = document.querySelector("svg.drawingLayer");
+  let { documentId, pageNumber } = getMetadata(svg);
+
+  PDFJSAnnotate.getStoreAdapter()
+    .getAnnotations(documentId, pageNumber)
+    .then((annotations) => {
+      annotations.annotations.forEach((annotation) =>
+        PDFJSAnnotate.getStoreAdapter().deleteAnnotation(
+          documentId,
+          annotation.annotationId
+        )
+      );
+    });
+}
+
+/**
  * Enable edit mode behavior.
  */
 export function enableEdit() {

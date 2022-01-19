@@ -112,6 +112,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "deleteAnnotationFromId": () => (/* binding */ deleteAnnotationFromId),
+/* harmony export */   "clearAll": () => (/* binding */ clearAll),
 /* harmony export */   "enableEdit": () => (/* binding */ enableEdit),
 /* harmony export */   "disableEdit": () => (/* binding */ disableEdit)
 /* harmony export */ });
@@ -524,6 +525,19 @@ function deleteAnnotationFromId(annotationId) {
 
   _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().deleteAnnotation(documentId, annotationId);
 }
+function clearAll() {
+  var svg = document.querySelector("svg.drawingLayer");
+
+  var _getMetadata4 = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getMetadata)(svg),
+      documentId = _getMetadata4.documentId,
+      pageNumber = _getMetadata4.pageNumber;
+
+  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().getAnnotations(documentId, pageNumber).then(function (annotations) {
+    annotations.annotations.forEach(function (annotation) {
+      return _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().deleteAnnotation(documentId, annotation.annotationId);
+    });
+  });
+}
 /**
  * Enable edit mode behavior.
  */
@@ -662,6 +676,7 @@ __webpack_require__.r(__webpack_exports__);
   disablePen: _pen__WEBPACK_IMPORTED_MODULE_2__.disablePen,
   enablePen: _pen__WEBPACK_IMPORTED_MODULE_2__.enablePen,
   deleteAnnotationFromId: _edit__WEBPACK_IMPORTED_MODULE_1__.deleteAnnotationFromId,
+  clearAll: _edit__WEBPACK_IMPORTED_MODULE_1__.clearAll,
   setPen: _pen__WEBPACK_IMPORTED_MODULE_2__.setPen,
   disablePoint: _point__WEBPACK_IMPORTED_MODULE_3__.disablePoint,
   enablePoint: _point__WEBPACK_IMPORTED_MODULE_3__.enablePoint,
