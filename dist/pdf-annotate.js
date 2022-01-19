@@ -529,7 +529,7 @@ function selectAnnotationFromId(id) {
   destroyEditOverlay();
   overlay = document.createElement("div");
   var anchor = document.createElement("a");
-  var parentNode = document.querySelector("svg.drawingLayer");
+  var parentNode = document.querySelector("svg.drawingLayer").parentNode;
   var target = document.querySelector("[data-pdf-annotate-id=\"".concat(id, "\"]"));
   var rect = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getAnnotationRect)(target);
   showOverlay(rect, id, anchor, parentNode);

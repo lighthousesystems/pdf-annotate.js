@@ -399,7 +399,7 @@ export function selectAnnotationFromId(id) {
 
   overlay = document.createElement("div");
   let anchor = document.createElement("a");
-  let parentNode = document.querySelector("svg.drawingLayer");
+  let parentNode = document.querySelector("svg.drawingLayer").parentNode;
   let target = document.querySelector(`[data-pdf-annotate-id="${id}"]`);
   let rect = getAnnotationRect(target);
 
