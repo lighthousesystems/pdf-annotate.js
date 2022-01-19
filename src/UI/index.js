@@ -4,6 +4,7 @@ import {
   enableEdit,
   deleteAnnotationFromId,
   clearAll,
+  selectAnnotationFromId,
 } from "./edit";
 import { disablePen, enablePen, setPen } from "./pen";
 import { disablePoint, enablePoint } from "./point";
@@ -27,6 +28,7 @@ export default {
   enablePen,
   deleteAnnotationFromId,
   clearAll,
+  selectAnnotationFromId,
   setPen,
   disablePoint,
   enablePoint,

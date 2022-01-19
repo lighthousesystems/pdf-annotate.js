@@ -33,6 +33,18 @@ function createEditOverlay(target) {
   let parentNode = findSVGContainer(target).parentNode;
   let id = target.getAttribute("data-pdf-annotate-id");
   let rect = getAnnotationRect(target);
+
+  showOverlay(rect, id, anchor, parentNode);
+}
+
+/**
+ * Show the overlay.
+ * @param {any} rect The rect.
+ * @param {any} id The Id.
+ * @param {any} anchor The anchor.
+ * @param {any} parentNode The parent node.
+ */
+function showOverlay(rect, id, anchor, parentNode) {
   let styleLeft = rect.left - OVERLAY_BORDER_SIZE;
   let styleTop = rect.top - OVERLAY_BORDER_SIZE;
 
@@ -376,6 +388,22 @@ function handleDocumentMouseup(e) {
  */
 function handleAnnotationClick(target) {
   createEditOverlay(target);
+}
+
+/**
+ * Select an annotation from an id.
+ * @param {Number} id The annotation Id.
+ */
+export function selectAnnotationFromId(id) {
+  destroyEditOverlay();
+
+  overlay = document.createElement("div");
+  let anchor = document.createElement("a");
+  let parentNode = document.querySelector("svg.drawingLayer");
+  let target = document.querySelector(`[data-pdf-annotate-id="${id}"]`);
+  let rect = getAnnotationRect(target);
+
+  showOverlay(rect, id, anchor, parentNode);
 }
 
 /**
