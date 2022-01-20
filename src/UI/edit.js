@@ -33,6 +33,18 @@ function createEditOverlay(target) {
   let parentNode = findSVGContainer(target).parentNode;
   let id = target.getAttribute("data-pdf-annotate-id");
   let rect = getAnnotationRect(target);
+
+  showOverlay(rect, id, anchor, parentNode);
+}
+
+/**
+ * Show the overlay.
+ * @param {any} rect The rect.
+ * @param {any} id The Id.
+ * @param {any} anchor The anchor.
+ * @param {any} parentNode The parent node.
+ */
+function showOverlay(rect, id, anchor, parentNode) {
   let styleLeft = rect.left - OVERLAY_BORDER_SIZE;
   let styleTop = rect.top - OVERLAY_BORDER_SIZE;
 
@@ -379,6 +391,22 @@ function handleAnnotationClick(target) {
 }
 
 /**
+ * Select an annotation from an id.
+ * @param {Number} id The annotation Id.
+ */
+export function selectAnnotationFromId(id) {
+  destroyEditOverlay();
+
+  overlay = document.createElement("div");
+  let anchor = document.createElement("a");
+  let parentNode = document.querySelector("svg.drawingLayer").parentNode;
+  let target = document.querySelector(`[data-pdf-annotate-id="${id}"]`);
+  let rect = getAnnotationRect(target);
+
+  showOverlay(rect, id, anchor, parentNode);
+}
+
+/**
  * Delete an annotation via its Id.
  * @param {Number} annotationId The annotation Id to delete.
  */
@@ -395,6 +423,25 @@ export function deleteAnnotationFromId(annotationId) {
   });
 
   PDFJSAnnotate.getStoreAdapter().deleteAnnotation(documentId, annotationId);
+}
+
+/**
+ * Function to clear all annotations.
+ */
+export function clearAll() {
+  let svg = document.querySelector("svg.drawingLayer");
+  let { documentId, pageNumber } = getMetadata(svg);
+
+  PDFJSAnnotate.getStoreAdapter()
+    .getAnnotations(documentId, pageNumber)
+    .then((annotations) => {
+      annotations.annotations.forEach((annotation) =>
+        PDFJSAnnotate.getStoreAdapter().deleteAnnotation(
+          documentId,
+          annotation.annotationId
+        )
+      );
+    });
 }
 
 /**

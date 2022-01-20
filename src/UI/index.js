@@ -1,5 +1,11 @@
 import { addEventListener, removeEventListener, fireEvent } from "./event";
-import { disableEdit, enableEdit, deleteAnnotationFromId } from "./edit";
+import {
+  disableEdit,
+  enableEdit,
+  deleteAnnotationFromId,
+  clearAll,
+  selectAnnotationFromId,
+} from "./edit";
 import { disablePen, enablePen, setPen } from "./pen";
 import { disablePoint, enablePoint } from "./point";
 import { disableRect, enableRect, highlightText, editRect } from "./rect";
@@ -21,6 +27,8 @@ export default {
   disablePen,
   enablePen,
   deleteAnnotationFromId,
+  clearAll,
+  selectAnnotationFromId,
   setPen,
   disablePoint,
   enablePoint,

@@ -111,7 +111,9 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "selectAnnotationFromId": () => (/* binding */ selectAnnotationFromId),
 /* harmony export */   "deleteAnnotationFromId": () => (/* binding */ deleteAnnotationFromId),
+/* harmony export */   "clearAll": () => (/* binding */ clearAll),
 /* harmony export */   "enableEdit": () => (/* binding */ enableEdit),
 /* harmony export */   "disableEdit": () => (/* binding */ disableEdit)
 /* harmony export */ });
@@ -161,6 +163,18 @@ function createEditOverlay(target) {
   var parentNode = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.findSVGContainer)(target).parentNode;
   var id = target.getAttribute("data-pdf-annotate-id");
   var rect = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getAnnotationRect)(target);
+  showOverlay(rect, id, anchor, parentNode);
+}
+/**
+ * Show the overlay.
+ * @param {any} rect The rect.
+ * @param {any} id The Id.
+ * @param {any} anchor The anchor.
+ * @param {any} parentNode The parent node.
+ */
+
+
+function showOverlay(rect, id, anchor, parentNode) {
   var styleLeft = rect.left - OVERLAY_BORDER_SIZE;
   var styleTop = rect.top - OVERLAY_BORDER_SIZE;
   overlay.setAttribute("id", "pdf-annotate-edit-overlay");
@@ -506,10 +520,24 @@ function handleAnnotationClick(target) {
   createEditOverlay(target);
 }
 /**
+ * Select an annotation from an id.
+ * @param {Number} id The annotation Id.
+ */
+
+
+function selectAnnotationFromId(id) {
+  destroyEditOverlay();
+  overlay = document.createElement("div");
+  var anchor = document.createElement("a");
+  var parentNode = document.querySelector("svg.drawingLayer").parentNode;
+  var target = document.querySelector("[data-pdf-annotate-id=\"".concat(id, "\"]"));
+  var rect = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getAnnotationRect)(target);
+  showOverlay(rect, id, anchor, parentNode);
+}
+/**
  * Delete an annotation via its Id.
  * @param {Number} annotationId The annotation Id to delete.
  */
-
 
 function deleteAnnotationFromId(annotationId) {
   var nodes = document.querySelectorAll("[data-pdf-annotate-id=\"".concat(annotationId, "\"]"));
@@ -523,6 +551,23 @@ function deleteAnnotationFromId(annotationId) {
   });
 
   _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().deleteAnnotation(documentId, annotationId);
+}
+/**
+ * Function to clear all annotations.
+ */
+
+function clearAll() {
+  var svg = document.querySelector("svg.drawingLayer");
+
+  var _getMetadata4 = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getMetadata)(svg),
+      documentId = _getMetadata4.documentId,
+      pageNumber = _getMetadata4.pageNumber;
+
+  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().getAnnotations(documentId, pageNumber).then(function (annotations) {
+    annotations.annotations.forEach(function (annotation) {
+      return _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().deleteAnnotation(documentId, annotation.annotationId);
+    });
+  });
 }
 /**
  * Enable edit mode behavior.
@@ -662,6 +707,8 @@ __webpack_require__.r(__webpack_exports__);
   disablePen: _pen__WEBPACK_IMPORTED_MODULE_2__.disablePen,
   enablePen: _pen__WEBPACK_IMPORTED_MODULE_2__.enablePen,
   deleteAnnotationFromId: _edit__WEBPACK_IMPORTED_MODULE_1__.deleteAnnotationFromId,
+  clearAll: _edit__WEBPACK_IMPORTED_MODULE_1__.clearAll,
+  selectAnnotationFromId: _edit__WEBPACK_IMPORTED_MODULE_1__.selectAnnotationFromId,
   setPen: _pen__WEBPACK_IMPORTED_MODULE_2__.setPen,
   disablePoint: _point__WEBPACK_IMPORTED_MODULE_3__.disablePoint,
   enablePoint: _point__WEBPACK_IMPORTED_MODULE_3__.enablePoint,
