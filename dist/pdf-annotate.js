@@ -3741,7 +3741,7 @@ function processTextContent(comment) {
   var tspans = []; // If we only have 1 line, we don't need to split anything up into smaller tspans.
 
   if (lines.length === 1) {
-    return comment.content;
+    return "<tspan x=\"".concat(comment.x, "\" dy=\"1em\">").concat(comment.content, "</tspan>");
   }
 
   for (var index = 0; index < lines.length; index++) {

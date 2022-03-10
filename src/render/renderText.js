@@ -34,7 +34,7 @@ export function processTextContent(comment) {
 
   // If we only have 1 line, we don't need to split anything up into smaller tspans.
   if (lines.length === 1) {
-    return comment.content;
+    return `<tspan x="${comment.x}" dy="1em">${comment.content}</tspan>`;
   }
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index];
