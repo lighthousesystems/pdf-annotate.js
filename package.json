@@ -1,6 +1,6 @@
 {
   "name": "@lighthousesystems/pdf-annotate.js",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Annotation layer for pdf.js",
   "main": "dist/pdf-annotate.js",
   "scripts": {
