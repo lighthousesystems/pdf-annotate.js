@@ -58,45 +58,43 @@ function handleInputKeyup(e) {
  * Save a text annotation from input
  */
 function saveText() {
-  if (textArea.value.trim().length > 0) {
-    let clientX = parseInt(textArea.style.left, 10);
-    let clientY = parseInt(textArea.style.top, 10);
-    let svg = findSVGAtPoint(clientX, clientY);
-    if (!svg) {
-      return;
-    }
-
-    let { documentId, pageNumber } = getMetadata(svg);
-    let rect = svg.getBoundingClientRect();
-    let annotation = Object.assign(
-      {
-        type: "textbox",
-        size: _textSize,
-        color: _textColor,
-        content: textArea.value.trim(),
-      },
-      scaleDown(svg, {
-        x: clientX - rect.left,
-        y: clientY - rect.top,
-        width: textArea.offsetWidth,
-        height: textArea.offsetHeight,
-      })
-    );
-
-    PDFJSAnnotate.getStoreAdapter()
-      .addAnnotation(documentId, pageNumber, annotation)
-      .then((annotation) => {
-        appendChild(svg, annotation);
-        // Create and dispatch an event that can be listened to outside of pdf-annotate.
-        let event = new CustomEvent("text:saved", {
-          detail: {
-            uuid: annotation.uuid,
-            content: annotation.content,
-          },
-        });
-        document.dispatchEvent(event);
-      });
+  let clientX = parseInt(textArea.style.left, 10);
+  let clientY = parseInt(textArea.style.top, 10);
+  let svg = findSVGAtPoint(clientX, clientY);
+  if (!svg) {
+    return;
   }
+
+  let { documentId, pageNumber } = getMetadata(svg);
+  let rect = svg.getBoundingClientRect();
+  let annotation = Object.assign(
+    {
+      type: "textbox",
+      size: _textSize,
+      color: _textColor,
+      content: textArea.value.trim(),
+    },
+    scaleDown(svg, {
+      x: clientX - rect.left,
+      y: clientY - rect.top,
+      width: textArea.offsetWidth,
+      height: textArea.offsetHeight,
+    })
+  );
+
+  PDFJSAnnotate.getStoreAdapter()
+    .addAnnotation(documentId, pageNumber, annotation)
+    .then((annotation) => {
+      appendChild(svg, annotation);
+      // Create and dispatch an event that can be listened to outside of pdf-annotate.
+      let event = new CustomEvent("text:saved", {
+        detail: {
+          uuid: annotation.uuid,
+          content: annotation.content,
+        },
+      });
+      document.dispatchEvent(event);
+    });
 
   closeInput();
 }

@@ -1702,44 +1702,41 @@ function handleInputKeyup(e) {
 
 
 function saveText() {
-  if (textArea.value.trim().length > 0) {
-    var clientX = parseInt(textArea.style.left, 10);
-    var clientY = parseInt(textArea.style.top, 10);
-    var svg = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.findSVGAtPoint)(clientX, clientY);
+  var clientX = parseInt(textArea.style.left, 10);
+  var clientY = parseInt(textArea.style.top, 10);
+  var svg = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.findSVGAtPoint)(clientX, clientY);
 
-    if (!svg) {
-      return;
-    }
-
-    var _getMetadata = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getMetadata)(svg),
-        documentId = _getMetadata.documentId,
-        pageNumber = _getMetadata.pageNumber;
-
-    var rect = svg.getBoundingClientRect();
-    var annotation = Object.assign({
-      type: "textbox",
-      size: _textSize,
-      color: _textColor,
-      content: textArea.value.trim()
-    }, (0,_utils__WEBPACK_IMPORTED_MODULE_3__.scaleDown)(svg, {
-      x: clientX - rect.left,
-      y: clientY - rect.top,
-      width: textArea.offsetWidth,
-      height: textArea.offsetHeight
-    }));
-    _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().addAnnotation(documentId, pageNumber, annotation).then(function (annotation) {
-      (0,_render_appendChild__WEBPACK_IMPORTED_MODULE_1__["default"])(svg, annotation); // Create and dispatch an event that can be listened to outside of pdf-annotate.
-
-      var event = new CustomEvent("text:saved", {
-        detail: {
-          uuid: annotation.uuid,
-          content: annotation.content
-        }
-      });
-      document.dispatchEvent(event);
-    });
+  if (!svg) {
+    return;
   }
 
+  var _getMetadata = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.getMetadata)(svg),
+      documentId = _getMetadata.documentId,
+      pageNumber = _getMetadata.pageNumber;
+
+  var rect = svg.getBoundingClientRect();
+  var annotation = Object.assign({
+    type: "textbox",
+    size: _textSize,
+    color: _textColor,
+    content: textArea.value.trim()
+  }, (0,_utils__WEBPACK_IMPORTED_MODULE_3__.scaleDown)(svg, {
+    x: clientX - rect.left,
+    y: clientY - rect.top,
+    width: textArea.offsetWidth,
+    height: textArea.offsetHeight
+  }));
+  _PDFJSAnnotate__WEBPACK_IMPORTED_MODULE_0__["default"].getStoreAdapter().addAnnotation(documentId, pageNumber, annotation).then(function (annotation) {
+    (0,_render_appendChild__WEBPACK_IMPORTED_MODULE_1__["default"])(svg, annotation); // Create and dispatch an event that can be listened to outside of pdf-annotate.
+
+    var event = new CustomEvent("text:saved", {
+      detail: {
+        uuid: annotation.uuid,
+        content: annotation.content
+      }
+    });
+    document.dispatchEvent(event);
+  });
   closeInput();
 }
 /**
